@@ -18,7 +18,7 @@ services:
     command: >
       sh -c '
         git init &&
-        git remote add origin https://$GITHUB_TOKEN@github.com/oxcl/bug-free-waddle.git &&
+        git remote add origin git@github.com:oxcl/bug-free-waddle.git &&
         git checkout -b gh-pages &&
         git add dist -f &&
         git commit -m "Deploy to GitHub Pages" &&

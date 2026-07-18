@@ -1,0 +1,264 @@
+import { useMemo } from "react";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Chip from "@mui/material/Chip";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Avatar from "@mui/material/Avatar";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import { useNavigate } from "react-router-dom";
+import { coins, portfolioHistory, recentActivity } from "../data";
+
+function PortfolioChart() {
+  const max = Math.max(...portfolioHistory.map((d) => d.value));
+  const min = Math.min(...portfolioHistory.map((d) => d.value));
+  const range = max - min || 1;
+  const width = 600;
+  const height = 180;
+  const padding = 20;
+
+  const points = portfolioHistory.map((d, i) => ({
+    x: padding + (i / (portfolioHistory.length - 1)) * (width - padding * 2),
+    y: padding + (1 - (d.value - min) / range) * (height - padding * 2),
+  }));
+
+  const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
+  const areaPath = `${linePath} L ${points[points.length - 1].x} ${height} L ${points[0].x} ${height} Z`;
+
+  return (
+    <Box sx={{ width: "100%", height: height, "& svg": { width: "100%", height: "100%" } }}>
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#6366f1" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {[0, 1, 2, 3, 4].map((i) => {
+          const y = padding + (i / 4) * (height - padding * 2);
+          return <line key={i} x1={padding} y1={y} x2={width - padding} y2={y} stroke="rgba(255,255,255,0.03)" strokeWidth="1" />;
+        })}
+        <path d={areaPath} fill="url(#chartGrad)" />
+        <path d={linePath} fill="none" stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        {points.map((p, i) => (
+          <circle key={i} cx={p.x} cy={p.y} r="3" fill="#6366f1" stroke="#060918" strokeWidth="2" />
+        ))}
+      </svg>
+    </Box>
+  );
+}
+
+function StatCard({ title, value, change, icon, color }: { title: string; value: string; change?: string; icon: React.ReactNode; color: string }) {
+  const isPositive = change && !change.startsWith("-");
+  return (
+    <Card elevation={0} sx={{ height: "100%" }}>
+      <CardContent sx={{ p: 2.5 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
+          <Box sx={{ width: 40, height: 40, borderRadius: "10px", bgcolor: `${color}15`, display: "flex", alignItems: "center", justifyContent: "center", color }}>
+            {icon}
+          </Box>
+          {change && (
+            <Chip
+              icon={isPositive ? <TrendingUpIcon sx={{ fontSize: "12px !important" }} /> : <TrendingDownIcon sx={{ fontSize: "12px !important" }} />}
+              label={change}
+              size="small"
+              sx={{
+                bgcolor: isPositive ? "rgba(16, 185, 129, 0.08)" : "rgba(239, 68, 68, 0.08)",
+                color: isPositive ? "#10b981" : "#ef4444",
+                fontWeight: 600,
+                fontSize: "0.7rem",
+                height: 24,
+                "& .MuiChip-icon": { color: isPositive ? "#10b981 !important" : "#ef4444 !important" },
+              }}
+            />
+          )}
+        </Box>
+        <Typography variant="body2" sx={{ color: "#64748b", mb: 0.5, fontSize: "0.8rem" }}>{title}</Typography>
+        <Typography variant="h5" sx={{ color: "#f1f5f9", fontWeight: 700, letterSpacing: "-0.01em" }}>{value}</Typography>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function OverviewPage() {
+  const navigate = useNavigate();
+  const totalValue = useMemo(() => coins.reduce((sum, c) => sum + c.holdings * c.price, 0), []);
+  const totalCost = useMemo(() => coins.reduce((sum, c) => sum + c.holdings * c.avgBuy, 0), []);
+  const totalPnL = totalValue - totalCost;
+  const pnlPercent = ((totalPnL / totalCost) * 100).toFixed(2);
+
+  return (
+    <Box>
+      {/* Stats Row */}
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard title="Portfolio Value" value={`$${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} change={`${Number(pnlPercent) > 0 ? "+" : ""}${pnlPercent}%`} icon={<AccountBalanceWalletIcon sx={{ fontSize: 20 }} />} color="#6366f1" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard title="24h P&L" value={`$${(totalValue * 0.0245).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} change="+2.45%" icon={<TrendingUpIcon sx={{ fontSize: 20 }} />} color="#10b981" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard title="Available Balance" value="$42,850.00" icon={<SwapHorizIcon sx={{ fontSize: 20 }} />} color="#22d3ee" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard title="Total P&L" value={`${totalPnL >= 0 ? "+" : ""}$${totalPnL.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} change={`${totalPnL >= 0 ? "+" : ""}${pnlPercent}%`} icon={<TrendingUpIcon sx={{ fontSize: 20 }} />} color={totalPnL >= 0 ? "#10b981" : "#ef4444"} />
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={2}>
+        {/* Portfolio Chart */}
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Card elevation={0} sx={{ height: "100%" }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                <Typography variant="subtitle1" sx={{ color: "#f1f5f9", fontWeight: 700 }}>Portfolio Performance</Typography>
+                <Box sx={{ display: "flex", gap: 0.5 }}>
+                  {["1W", "1M", "3M", "1Y", "ALL"].map((p) => (
+                    <Chip key={p} label={p} size="small" sx={{ bgcolor: p === "1M" ? "rgba(99, 102, 241, 0.12)" : "transparent", color: p === "1M" ? "#818cf8" : "#475569", fontWeight: 600, fontSize: "0.7rem", height: 24, border: p === "1M" ? "1px solid rgba(99, 102, 241, 0.2)" : "1px solid rgba(255,255,255,0.06)", cursor: "pointer", "&:hover": { bgcolor: "rgba(99, 102, 241, 0.08)" } }} />
+                  ))}
+                </Box>
+              </Box>
+              <PortfolioChart />
+              <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+                {portfolioHistory.map((d) => (
+                  <Typography key={d.date} variant="caption" sx={{ color: "#475569", fontSize: "0.65rem" }}>{d.date}</Typography>
+                ))}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Asset Allocation */}
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Card elevation={0} sx={{ height: "100%" }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Typography variant="subtitle1" sx={{ color: "#f1f5f9", fontWeight: 700, mb: 2 }}>Asset Allocation</Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                {coins.slice(0, 6).map((coin) => {
+                  const value = coin.holdings * coin.price;
+                  const pct = (value / totalValue) * 100;
+                  return (
+                    <Box key={coin.symbol}>
+                      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                          <Avatar sx={{ width: 22, height: 22, background: coin.gradient, fontSize: "0.55rem", fontWeight: 700 }}>{coin.symbol[0]}</Avatar>
+                          <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 500, fontSize: "0.8rem" }}>{coin.symbol}</Typography>
+                        </Box>
+                        <Typography variant="body2" sx={{ color: "#94a3b8", fontSize: "0.8rem" }}>{pct.toFixed(1)}%</Typography>
+                      </Box>
+                      <Box sx={{ height: 4, borderRadius: 2, bgcolor: "rgba(255,255,255,0.04)", overflow: "hidden" }}>
+                        <Box sx={{ height: "100%", width: `${pct}%`, bgcolor: coin.color, borderRadius: 2, transition: "width 0.5s ease" }} />
+                      </Box>
+                    </Box>
+                  );
+                })}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={2} sx={{ mt: 0 }}>
+        {/* Holdings */}
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Card elevation={0}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                <Typography variant="subtitle1" sx={{ color: "#f1f5f9", fontWeight: 700 }}>Your Holdings</Typography>
+                <Typography
+                  variant="body2"
+                  onClick={() => navigate("/dashboard/wallets")}
+                  sx={{ color: "#818cf8", fontWeight: 500, cursor: "pointer", "&:hover": { textDecoration: "underline" }, fontSize: "0.8rem" }}
+                >
+                  View All
+                </Typography>
+              </Box>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {["Asset", "Price", "Holdings", "Value", "P&L", "24h"].map((h) => (
+                      <TableCell key={h} sx={{ color: "#475569", fontWeight: 600, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", borderBottom: "1px solid rgba(255,255,255,0.04)", py: 1.5 }}>
+                        {h}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {coins.slice(0, 5).map((coin) => {
+                    const value = coin.holdings * coin.price;
+                    const cost = coin.holdings * coin.avgBuy;
+                    const pnl = value - cost;
+                    return (
+                      <TableRow key={coin.symbol} sx={{ cursor: "pointer", "&:hover": { bgcolor: "rgba(255,255,255,0.02)" }, "& td": { borderBottom: "1px solid rgba(255,255,255,0.03)", py: 1.5 } }}>
+                        <TableCell>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                            <Avatar sx={{ width: 30, height: 30, background: coin.gradient, fontSize: "0.7rem", fontWeight: 700 }}>{coin.symbol[0]}</Avatar>
+                            <Box>
+                              <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.85rem" }}>{coin.symbol}</Typography>
+                              <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.7rem" }}>{coin.name}</Typography>
+                            </Box>
+                          </Box>
+                        </TableCell>
+                        <TableCell sx={{ color: "#f1f5f9", fontWeight: 500, fontSize: "0.85rem" }}>${coin.price.toLocaleString()}</TableCell>
+                        <TableCell sx={{ color: "#94a3b8", fontSize: "0.85rem" }}>{coin.holdings.toLocaleString()} {coin.symbol}</TableCell>
+                        <TableCell sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.85rem" }}>${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                        <TableCell>
+                          <Typography sx={{ color: pnl >= 0 ? "#10b981" : "#ef4444", fontWeight: 600, fontSize: "0.85rem" }}>
+                            {pnl >= 0 ? "+" : ""}${pnl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                            {coin.change >= 0 ? <TrendingUpIcon sx={{ fontSize: 14, color: "#10b981" }} /> : <TrendingDownIcon sx={{ fontSize: 14, color: "#ef4444" }} />}
+                            <Typography sx={{ color: coin.change >= 0 ? "#10b981" : "#ef4444", fontWeight: 600, fontSize: "0.8rem" }}>{coin.change >= 0 ? "+" : ""}{coin.change}%</Typography>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Recent Activity */}
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Card elevation={0} sx={{ height: "100%" }}>
+            <CardContent sx={{ p: 2.5 }}>
+              <Typography variant="subtitle1" sx={{ color: "#f1f5f9", fontWeight: 700, mb: 2 }}>Recent Activity</Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+                {recentActivity.map((activity, i) => (
+                  <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1.5, p: 1.5, borderRadius: "8px", bgcolor: "rgba(255,255,255,0.02)", "&:hover": { bgcolor: "rgba(255,255,255,0.04)" } }}>
+                    <Box sx={{ width: 32, height: 32, borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", bgcolor: activity.type === "trade" ? "rgba(99, 102, 241, 0.1)" : activity.type === "deposit" ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)" }}>
+                      {activity.type === "trade" ? <SwapHorizIcon sx={{ fontSize: 16, color: "#818cf8" }} /> : activity.type === "deposit" ? <ArrowDownwardIcon sx={{ fontSize: 16, color: "#10b981" }} /> : <ArrowUpwardIcon sx={{ fontSize: 16, color: "#ef4444" }} />}
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 500, fontSize: "0.8rem" }}>{activity.action}</Typography>
+                      <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.7rem" }}>{activity.time}</Typography>
+                    </Box>
+                    <Box sx={{ textAlign: "right" }}>
+                      <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 500, fontSize: "0.8rem" }}>{activity.amount}</Typography>
+                      <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.7rem" }}>{activity.value}</Typography>
+                    </Box>
+                  </Box>
+                ))}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+}

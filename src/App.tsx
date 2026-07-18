@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Routes, Route, Link as RouterLink } from "react-router-dom";
+import { Routes, Route, Link as RouterLink, Navigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
@@ -62,6 +62,7 @@ import Layout from "./components/Layout";
 import MiniChart from "./components/MiniChart";
 import PageHeader from "./components/PageHeader";
 import CTASection from "./components/CTASection";
+import LoginPage from "./pages/LoginPage";
 
 const coins = [
   { name: "Bitcoin", symbol: "BTC", price: 67432.18, change: "+2.45", volume: "28.5B", marketCap: "1.32T" },
@@ -110,44 +111,223 @@ const ratePairs: Record<string, number> = {
 
 function HeroSection() {
   return (
-    <Box sx={{ position: "relative", overflow: "hidden", pt: { xs: 6, md: 8 }, pb: { xs: 6, md: 8 } }}>
-      <Box className="dot-grid" sx={{ position: "absolute", inset: 0, opacity: 0.3 }} />
+    <Box sx={{ position: "relative", overflow: "hidden", pt: { xs: 8, md: 10 }, pb: { xs: 8, md: 10 }, minHeight: { md: "85vh" }, display: "flex", alignItems: "center" }}>
+      {/* Background effects */}
+      <Box className="grid-pattern" sx={{ position: "absolute", inset: 0, opacity: 0.4 }} />
+
+      {/* Animated gradient orbs */}
+      <Box sx={{
+        position: "absolute",
+        top: "10%",
+        left: "5%",
+        width: 300,
+        height: 300,
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%)",
+        filter: "blur(40px)",
+        animation: "float 8s ease-in-out infinite",
+        pointerEvents: "none",
+      }} />
+      <Box sx={{
+        position: "absolute",
+        bottom: "10%",
+        right: "10%",
+        width: 250,
+        height: 250,
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%)",
+        filter: "blur(40px)",
+        animation: "float 10s ease-in-out infinite reverse",
+        pointerEvents: "none",
+      }} />
+      <Box sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 600,
+        height: 600,
+        borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(34, 197, 94, 0.05) 0%, transparent 70%)",
+        filter: "blur(80px)",
+        pointerEvents: "none",
+      }} />
+
       <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
-        <Grid container spacing={4} alignItems="center">
-          <Grid size={{ xs: 12, md: 6 }}>
+        <Grid container spacing={6} sx={{ alignItems: "center" }}>
+          <Grid size={{ xs: 12, md: 7 }}>
             <Box className="animate-slide-left">
-              <Chip label="Trusted by 2,400+ enterprises" size="small" sx={{ mb: 2, bgcolor: "rgba(255,255,255,0.06)", color: "#ccc", border: "1px solid rgba(255,255,255,0.1)", fontSize: "0.75rem" }} />
-              <Typography variant="h1" sx={{ fontSize: { xs: "2.5rem", md: "3.5rem", lg: "4rem" }, mb: 2, color: "#fff" }}>
-                Crypto Infrastructure
-                <br />
-                for Enterprise
+              <Box sx={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 1,
+                mb: 3,
+                px: 2,
+                py: 0.75,
+                borderRadius: 100,
+                bgcolor: "rgba(34, 197, 94, 0.08)",
+                border: "1px solid rgba(34, 197, 94, 0.15)",
+              }}>
+                <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#22c55e", boxShadow: "0 0 10px rgba(34, 197, 94, 0.5)" }} />
+                <Typography variant="caption" sx={{ color: "#4ade80", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.05em" }}>
+                  SYSTEMS OPERATIONAL
+                </Typography>
+              </Box>
+
+              <Typography variant="h1" sx={{
+                fontSize: { xs: "2.5rem", sm: "3rem", md: "3.8rem", lg: "4.2rem" },
+                mb: 2.5,
+                lineHeight: 1.08,
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+              }}>
+                <Box component="span" className="gradient-text" sx={{ display: "block" }}>Crypto Infrastructure</Box>
+                <Box component="span" sx={{
+                  display: "block",
+                  background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #06b6d4 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}>
+                  for Enterprise
+                </Box>
               </Typography>
-              <Typography variant="body1" sx={{ color: "#999", lineHeight: 1.8, mb: 4, maxWidth: 480, fontSize: "1.05rem" }}>
+
+              <Typography variant="body1" sx={{ color: "rgba(255,255,255,0.55)", lineHeight: 1.8, mb: 4, maxWidth: 520, fontSize: "1.1rem" }}>
                 Institutional-grade trading, custody, and settlement infrastructure. Power your business with the most reliable crypto platform.
               </Typography>
-              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 4 }}>
-                <Button variant="contained" size="large" endIcon={<ArrowForwardIcon />} sx={{ py: 1.5, px: 4, fontSize: "1rem" }}>
+
+              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 5 }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  endIcon={<ArrowForwardIcon />}
+                  sx={{
+                    py: 1.75,
+                    px: 4,
+                    fontSize: "1rem",
+                    fontWeight: 700,
+                    background: "linear-gradient(135deg, #fff 0%, #e5e5e5 100%)",
+                    color: "#000",
+                    "&:hover": {
+                      background: "linear-gradient(135deg, #e5e5e5 0%, #d4d4d4 100%)",
+                      transform: "translateY(-2px)",
+                      boxShadow: "0 12px 32px rgba(255,255,255,0.15)",
+                    },
+                    transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+                  }}
+                >
                   Request a Demo
                 </Button>
                 <RouterLink to="/resources/documentation" style={{ textDecoration: "none" }}>
-                  <Button variant="outlined" size="large" sx={{ py: 1.5, px: 4, fontSize: "1rem" }}>
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    sx={{
+                      py: 1.75,
+                      px: 4,
+                      fontSize: "1rem",
+                      borderColor: "rgba(255,255,255,0.15)",
+                      color: "#fff",
+                      "&:hover": {
+                        borderColor: "rgba(255,255,255,0.3)",
+                        bgcolor: "rgba(255,255,255,0.03)",
+                      },
+                    }}
+                  >
                     View Documentation
                   </Button>
                 </RouterLink>
               </Box>
-              <Box sx={{ display: "flex", gap: 5 }}>
-                {stats.slice(0, 2).map((s, i) => (
-                  <Box key={i}>
-                    <Typography variant="h5" sx={{ color: "#fff", fontWeight: 700 }}>{s.value}</Typography>
-                    <Typography variant="body2" sx={{ color: "#666", mt: 0.5, fontSize: "0.8rem" }}>{s.label}</Typography>
+
+              {/* Stats with animated borders */}
+              <Box sx={{ display: "flex", gap: { xs: 3, md: 5 }, flexWrap: "wrap" }}>
+                {stats.slice(0, 3).map((s, i) => (
+                  <Box key={i} className="metric-card" sx={{
+                    pl: 2,
+                    borderLeft: "2px solid",
+                    borderColor: i === 0 ? "rgba(59, 130, 246, 0.5)" : i === 1 ? "rgba(139, 92, 246, 0.5)" : "rgba(34, 197, 94, 0.5)",
+                  }}>
+                    <Typography variant="h5" sx={{
+                      fontWeight: 800,
+                      fontSize: { xs: "1.3rem", md: "1.5rem" },
+                      background: i === 0
+                        ? "linear-gradient(135deg, #3b82f6, #60a5fa)"
+                        : i === 1
+                          ? "linear-gradient(135deg, #8b5cf6, #a78bfa)"
+                          : "linear-gradient(135deg, #22c55e, #4ade80)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}>
+                      {s.value}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.4)", mt: 0.5, fontSize: "0.8rem", fontWeight: 500 }}>{s.label}</Typography>
                   </Box>
                 ))}
               </Box>
             </Box>
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Box sx={{ position: "relative", display: { xs: "none", md: "block" } }} className="animate-slide-right">
-              <Box component="img" src="/coins.jpg" alt="Cryptocurrency coins" sx={{ width: "100%", maxWidth: 480, mx: "auto", display: "block", borderRadius: 3, filter: "brightness(0.9)" }} />
+          <Grid size={{ xs: 12, md: 5 }}>
+            <Box sx={{ position: "relative", display: { xs: "none", md: "flex" }, justifyContent: "center", alignItems: "center" }} className="animate-slide-right">
+              {/* Glowing backdrop for image */}
+              <Box sx={{
+                position: "absolute",
+                width: "80%",
+                height: "80%",
+                borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.1) 40%, transparent 70%)",
+                filter: "blur(60px)",
+                pointerEvents: "none",
+              }} />
+              <Box component="img"
+                src="/coins.jpg"
+                alt="Cryptocurrency coins"
+                sx={{
+                  width: "100%",
+                  maxWidth: 480,
+                  mx: "auto",
+                  display: "block",
+                  borderRadius: 4,
+                  filter: "brightness(0.95) contrast(1.05)",
+                  position: "relative",
+                  zIndex: 1,
+                  boxShadow: "0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(59, 130, 246, 0.1)",
+                }}
+              />
+
+              {/* Floating price badges */}
+              <Box sx={{
+                position: "absolute",
+                top: "15%",
+                right: "5%",
+                zIndex: 2,
+                bgcolor: "rgba(17, 17, 17, 0.9)",
+                backdropFilter: "blur(20px)",
+                border: "1px solid rgba(34, 197, 94, 0.2)",
+                borderRadius: 2,
+                px: 2,
+                py: 1,
+                animation: "float 5s ease-in-out infinite",
+              }}>
+                <Typography variant="caption" sx={{ color: "#4ade80", fontWeight: 600, fontSize: "0.7rem" }}>BTC +2.45%</Typography>
+              </Box>
+
+              <Box sx={{
+                position: "absolute",
+                bottom: "20%",
+                left: "0%",
+                zIndex: 2,
+                bgcolor: "rgba(17, 17, 17, 0.9)",
+                backdropFilter: "blur(20px)",
+                border: "1px solid rgba(59, 130, 246, 0.2)",
+                borderRadius: 2,
+                px: 2,
+                py: 1,
+                animation: "float 7s ease-in-out infinite reverse",
+              }}>
+                <Typography variant="caption" sx={{ color: "#60a5fa", fontWeight: 600, fontSize: "0.7rem" }}>ETH +1.82%</Typography>
+              </Box>
             </Box>
           </Grid>
         </Grid>
@@ -207,7 +387,7 @@ function RateCalculator() {
             <IconButton onClick={handleSwap} sx={{ bgcolor: "rgba(255,255,255,0.06)", color: "#fff", "&:hover": { bgcolor: "rgba(255,255,255,0.1)" } }}><SwapVertIcon /></IconButton>
           </Box>
           <Box sx={{ display: "flex", gap: 2, mb: 2, flexDirection: { xs: "column", sm: "row" } }}>
-            <TextField label="Result" value={result.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} InputProps={{ readOnly: true }} fullWidth sx={{ "& .MuiOutlinedInput-root": { color: "#fff", fontWeight: 600, "& fieldset": { borderColor: "rgba(255,255,255,0.1)" } }, "& .MuiInputLabel-root": { color: "#666" } }} />
+            <TextField label="Result" value={result.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} slotProps={{ input: { readOnly: true } }} fullWidth sx={{ "& .MuiOutlinedInput-root": { color: "#fff", fontWeight: 600, "& fieldset": { borderColor: "rgba(255,255,255,0.1)" } }, "& .MuiInputLabel-root": { color: "#666" } }} />
             <FormControl sx={{ minWidth: 120 }}>
               <InputLabel sx={{ color: "#666" }}>To</InputLabel>
               <Select value={toCurrency} label="To" onChange={(e) => setToCurrency(e.target.value)} sx={{ color: "#fff", "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.1)" }, "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.2)" }, "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#fff" } }}>
@@ -371,36 +551,108 @@ function StatsSection() {
 function SpotTradingPage() {
   return (
     <Box>
-      <PageHeader title="Spot Trading" subtitle="Trade 200+ cryptocurrency pairs with deep liquidity, tight spreads, and institutional-grade execution. Our matching engine processes over 100,000 orders per second." badge="Trading" />
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <PageHeader
+        title="Spot Trading"
+        subtitle="Trade 200+ cryptocurrency pairs with deep liquidity, tight spreads, and institutional-grade execution. Our matching engine processes over 100,000 orders per second."
+        badge="Trading"
+        variant="trading"
+      />
+
+      {/* Live ticker bar */}
+      <Box sx={{ bgcolor: "rgba(34, 197, 94, 0.03)", borderBottom: "1px solid rgba(34, 197, 94, 0.1)", py: 1.5, overflow: "hidden" }}>
+        <Container maxWidth="lg">
+          <Box sx={{ display: "flex", gap: 4, alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
+            {[
+              { pair: "BTC/USDT", price: "67,432.18", change: "+2.45%", up: true },
+              { pair: "ETH/USDT", price: "3,521.67", change: "+1.82%", up: true },
+              { pair: "SOL/USDT", price: "178.93", change: "+5.67%", up: true },
+            ].map((item) => (
+              <Box key={item.pair} sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)", fontWeight: 600, fontSize: "0.75rem" }}>{item.pair}</Typography>
+                <Typography variant="caption" sx={{ color: "#fff", fontWeight: 700, fontSize: "0.8rem" }}>${item.price}</Typography>
+                <Typography variant="caption" sx={{ color: item.up ? "#4ade80" : "#ef4444", fontWeight: 600, fontSize: "0.75rem" }}>{item.change}</Typography>
+              </Box>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+
+      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+        {/* Feature cards with gradient accents */}
         <Grid container spacing={3}>
           {[
-            { icon: <SpeedIcon />, title: "Sub-Millisecond Execution", desc: "Co-located matching engine with latencies under 100 microseconds for optimal trade execution." },
-            { icon: <LanIcon />, title: "Deep Liquidity", desc: "Access aggregated liquidity from 15+ institutional market makers with guaranteed fill rates." },
-            { icon: <ShowChartIcon />, title: "Advanced Order Types", desc: "TWAP, VWAP, Iceberg, and custom algorithmic order types for sophisticated trading strategies." },
-            { icon: <HubIcon />, title: "Multi-Venue Routing", desc: "Smart order routing across multiple venues for best price execution and minimal slippage." },
+            { icon: <SpeedIcon />, title: "Sub-Millisecond Execution", desc: "Co-located matching engine with latencies under 100 microseconds for optimal trade execution.", color: "#3b82f6" },
+            { icon: <LanIcon />, title: "Deep Liquidity", desc: "Access aggregated liquidity from 15+ institutional market makers with guaranteed fill rates.", color: "#8b5cf6" },
+            { icon: <ShowChartIcon />, title: "Advanced Order Types", desc: "TWAP, VWAP, Iceberg, and custom algorithmic order types for sophisticated trading strategies.", color: "#22c55e" },
+            { icon: <HubIcon />, title: "Multi-Venue Routing", desc: "Smart order routing across multiple venues for best price execution and minimal slippage.", color: "#06b6d4" },
           ].map((f, i) => (
             <Grid size={{ xs: 12, sm: 6 }} key={i}>
-              <Card elevation={0} sx={{ height: "100%" }}>
+              <Card elevation={0} className="feature-card-animated hover-lift" sx={{ height: "100%" }}>
                 <CardContent sx={{ p: 3 }}>
-                  <Box sx={{ width: 44, height: 44, borderRadius: "10px", bgcolor: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", mb: 2, color: "#fff" }}>{f.icon}</Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#fff", mb: 0.5 }}>{f.title}</Typography>
-                  <Typography variant="body2" sx={{ color: "#666", lineHeight: 1.7 }}>{f.desc}</Typography>
+                  <Box sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: "12px",
+                    background: `linear-gradient(135deg, ${f.color}15 0%, ${f.color}05 100%)`,
+                    border: `1px solid ${f.color}20`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mb: 2.5,
+                    color: f.color,
+                  }}>{f.icon}</Box>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#fff", mb: 1 }}>{f.title}</Typography>
+                  <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)", lineHeight: 1.7 }}>{f.desc}</Typography>
                 </CardContent>
               </Card>
             </Grid>
           ))}
         </Grid>
 
-        <Box sx={{ mt: 6, mb: 4 }}>
-          <Typography variant="h4" sx={{ color: "#fff", mb: 1 }}>Supported Pairs</Typography>
-          <Typography variant="body2" sx={{ color: "#666", mb: 3 }}>200+ trading pairs across major cryptocurrencies and stablecoins</Typography>
-          <TableContainer component={Paper} elevation={0} sx={{ bgcolor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 2 }}>
+        {/* Trading terminal style table */}
+        <Box sx={{ mt: 8 }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
+            <Box>
+              <Typography variant="h4" sx={{ color: "#fff", mb: 0.5, fontWeight: 700 }}>Supported Pairs</Typography>
+              <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)" }}>200+ trading pairs across major cryptocurrencies and stablecoins</Typography>
+            </Box>
+            <Chip
+              label="LIVE"
+              size="small"
+              sx={{
+                bgcolor: "rgba(34, 197, 94, 0.1)",
+                color: "#4ade80",
+                border: "1px solid rgba(34, 197, 94, 0.2)",
+                fontWeight: 700,
+                fontSize: "0.7rem",
+                "&::before": {
+                  content: '""',
+                  display: "inline-block",
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  bgcolor: "#22c55e",
+                  mr: 0.75,
+                  boxShadow: "0 0 8px rgba(34, 197, 94, 0.5)",
+                },
+              }}
+            />
+          </Box>
+
+          <TableContainer component={Paper} elevation={0} sx={{
+            bgcolor: "#0a0a0a",
+            border: "1px solid rgba(255,255,255,0.06)",
+            borderRadius: 3,
+            overflow: "hidden",
+            "& .MuiTableCell-root": {
+              borderColor: "rgba(255,255,255,0.04)",
+            },
+          }}>
             <Table size="small">
               <TableHead>
-                <TableRow>
+                <TableRow sx={{ bgcolor: "rgba(255,255,255,0.02)" }}>
                   {["Pair", "Price", "24h Change", "24h Volume", "Spread"].map((h) => (
-                    <TableCell key={h} sx={{ color: "#666", fontWeight: 600, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>{h}</TableCell>
+                    <TableCell key={h} sx={{ color: "rgba(255,255,255,0.4)", fontWeight: 600, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.1em", py: 2 }}>{h}</TableCell>
                   ))}
                 </TableRow>
               </TableHead>
@@ -412,13 +664,52 @@ function SpotTradingPage() {
                   { pair: "BNB/USDT", price: "612.45", change: "+0.93%", vol: "$2.1B", spread: "0.02%", up: true },
                   { pair: "XRP/USDT", price: "0.5821", change: "+0.89%", vol: "$1.2B", spread: "0.03%", up: true },
                   { pair: "ADA/USDT", price: "0.6234", change: "-1.23%", vol: "$892M", spread: "0.04%", up: false },
-                ].map((row) => (
-                  <TableRow key={row.pair} className="table-row-hover" sx={{ cursor: "pointer", "& td": { borderBottom: "1px solid rgba(255,255,255,0.04)" } }}>
-                    <TableCell sx={{ color: "#fff", fontWeight: 600 }}>{row.pair}</TableCell>
-                    <TableCell sx={{ color: "#fff" }}>${row.price}</TableCell>
-                    <TableCell sx={{ color: row.up ? "#22c55e" : "#ef4444", fontWeight: 600 }}>{row.change}</TableCell>
-                    <TableCell sx={{ color: "#999" }}>{row.vol}</TableCell>
-                    <TableCell sx={{ color: "#999" }}>{row.spread}</TableCell>
+                ].map((row, _i) => (
+                  <TableRow
+                    key={row.pair}
+                    className="table-row-hover"
+                    sx={{
+                      cursor: "pointer",
+                      "& td": { py: 2, transition: "all 0.2s" },
+                      "&:hover": { bgcolor: "rgba(59, 130, 246, 0.03)" },
+                    }}
+                  >
+                    <TableCell>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                        <Box sx={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: "8px",
+                          bgcolor: "rgba(255,255,255,0.05)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "0.7rem",
+                          fontWeight: 700,
+                          color: "rgba(255,255,255,0.7)",
+                        }}>
+                          {row.pair.split("/")[0].charAt(0)}
+                        </Box>
+                        <Typography sx={{ color: "#fff", fontWeight: 700, fontSize: "0.9rem" }}>{row.pair}</Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ color: "#fff", fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.85rem" }}>${row.price}</TableCell>
+                    <TableCell>
+                      <Box sx={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 0.5,
+                        px: 1,
+                        py: 0.25,
+                        borderRadius: 1,
+                        bgcolor: row.up ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)",
+                      }}>
+                        {row.up ? <TrendingUpIcon sx={{ fontSize: 14, color: "#4ade80" }} /> : <TrendingDownIcon sx={{ fontSize: 14, color: "#f87171" }} />}
+                        <Typography sx={{ color: row.up ? "#4ade80" : "#f87171", fontWeight: 700, fontSize: "0.8rem" }}>{row.change}</Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ color: "rgba(255,255,255,0.5)", fontSize: "0.85rem" }}>{row.vol}</TableCell>
+                    <TableCell sx={{ color: "rgba(255,255,255,0.4)", fontSize: "0.85rem" }}>{row.spread}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -434,62 +725,168 @@ function SpotTradingPage() {
 function OTCDeskPage() {
   return (
     <Box>
-      <PageHeader title="OTC Desk" subtitle="Execute large block trades with zero market impact. Our OTC desk handles trades from $100K to $500M+ with competitive pricing and instant settlement." badge="OTC" />
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <PageHeader
+        title="OTC Desk"
+        subtitle="Execute large block trades with zero market impact. Our OTC desk handles trades from $100K to $500M+ with competitive pricing and instant settlement."
+        badge="OTC"
+        variant="trading"
+      />
+      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+        {/* Feature cards */}
         <Grid container spacing={3}>
           {[
-            { icon: <AccountBalanceIcon />, title: "Zero Slippage", desc: "Execute large orders at a single price with no market impact. Guaranteed execution at quoted price." },
-            { icon: <TollIcon />, title: "Competitive Pricing", desc: "Tight spreads sourced from 20+ institutional liquidity providers with real-time pricing." },
-            { icon: <PaymentIcon />, title: "Flexible Settlement", desc: "Settle in fiat or crypto with T+0 to T+2 settlement options.支持 USD, EUR, GBP, and 40+ currencies." },
-            { icon: <SupportAgentIcon />, title: "Dedicated Trader", desc: "Personal OTC trader available 24/7 for custom execution strategies and market color." },
+            { icon: <AccountBalanceIcon />, title: "Zero Slippage", desc: "Execute large orders at a single price with no market impact. Guaranteed execution at quoted price.", color: "#22c55e" },
+            { icon: <TollIcon />, title: "Competitive Pricing", desc: "Tight spreads sourced from 20+ institutional liquidity providers with real-time pricing.", color: "#3b82f6" },
+            { icon: <PaymentIcon />, title: "Flexible Settlement", desc: "Settle in fiat or crypto with T+0 to T+2 settlement options. Supports USD, EUR, GBP, and 40+ currencies.", color: "#8b5cf6" },
+            { icon: <SupportAgentIcon />, title: "Dedicated Trader", desc: "Personal OTC trader available 24/7 for custom execution strategies and market color.", color: "#06b6d4" },
           ].map((f, i) => (
             <Grid size={{ xs: 12, sm: 6 }} key={i}>
-              <Card elevation={0} sx={{ height: "100%" }}>
+              <Card elevation={0} className="feature-card-animated hover-lift" sx={{ height: "100%" }}>
                 <CardContent sx={{ p: 3 }}>
-                  <Box sx={{ width: 44, height: 44, borderRadius: "10px", bgcolor: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", mb: 2, color: "#fff" }}>{f.icon}</Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#fff", mb: 0.5 }}>{f.title}</Typography>
-                  <Typography variant="body2" sx={{ color: "#666", lineHeight: 1.7 }}>{f.desc}</Typography>
+                  <Box sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: "12px",
+                    background: `linear-gradient(135deg, ${f.color}15 0%, ${f.color}05 100%)`,
+                    border: `1px solid ${f.color}20`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mb: 2.5,
+                    color: f.color,
+                  }}>{f.icon}</Box>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#fff", mb: 1 }}>{f.title}</Typography>
+                  <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)", lineHeight: 1.7 }}>{f.desc}</Typography>
                 </CardContent>
               </Card>
             </Grid>
           ))}
         </Grid>
 
-        <Box sx={{ mt: 6, bgcolor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 2, p: { xs: 3, md: 4 } }}>
-          <Typography variant="h5" sx={{ color: "#fff", mb: 3 }}>How It Works</Typography>
+        {/* How It Works - Creative step flow */}
+        <Box sx={{ mt: 8, position: "relative" }}>
+          <Box sx={{ textAlign: "center", mb: 5 }}>
+            <Typography variant="h4" sx={{ color: "#fff", mb: 1, fontWeight: 700 }}>How It Works</Typography>
+            <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)" }}>Simple 4-step process for institutional OTC trades</Typography>
+          </Box>
+
           <Grid container spacing={3}>
             {[
-              { step: "01", title: "Request a Quote", desc: "Contact our OTC desk via API, chat, or phone with your desired trade parameters." },
-              { step: "02", title: "Receive Pricing", desc: "Get a competitive, firm quote within seconds from our aggregated liquidity pool." },
-              { step: "03", title: "Confirm & Execute", desc: "Confirm the trade and receive instant execution confirmation with full audit trail." },
-              { step: "04", title: "Settle", desc: "Funds settle instantly to your MATBEA account or external wallet/bank account." },
+              { step: "01", title: "Request a Quote", desc: "Contact our OTC desk via API, chat, or phone with your desired trade parameters.", color: "#3b82f6" },
+              { step: "02", title: "Receive Pricing", desc: "Get a competitive, firm quote within seconds from our aggregated liquidity pool.", color: "#8b5cf6" },
+              { step: "03", title: "Confirm & Execute", desc: "Confirm the trade and receive instant execution confirmation with full audit trail.", color: "#22c55e" },
+              { step: "04", title: "Settle", desc: "Funds settle instantly to your MATBEA account or external wallet/bank account.", color: "#06b6d4" },
             ].map((s, i) => (
               <Grid size={{ xs: 12, sm: 6, md: 3 }} key={i}>
-                <Box>
-                  <Typography variant="h3" sx={{ color: "rgba(255,255,255,0.1)", fontWeight: 800, mb: 1 }}>{s.step}</Typography>
-                  <Typography variant="subtitle1" sx={{ color: "#fff", fontWeight: 600, mb: 0.5 }}>{s.title}</Typography>
-                  <Typography variant="body2" sx={{ color: "#666", lineHeight: 1.7 }}>{s.desc}</Typography>
+                <Box sx={{
+                  p: 3,
+                  height: "100%",
+                  bgcolor: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  borderRadius: 3,
+                  position: "relative",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    bgcolor: "rgba(255,255,255,0.04)",
+                    borderColor: `${s.color}30`,
+                    transform: "translateY(-4px)",
+                  },
+                }}>
+                  {/* Step number with gradient */}
+                  <Box sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: "12px",
+                    background: `linear-gradient(135deg, ${s.color}20 0%, ${s.color}05 100%)`,
+                    border: `1px solid ${s.color}30`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mb: 2,
+                  }}>
+                    <Typography variant="h6" sx={{
+                      fontWeight: 800,
+                      background: `linear-gradient(135deg, ${s.color}, ${s.color}99)`,
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}>
+                      {s.step}
+                    </Typography>
+                  </Box>
+
+                  <Typography variant="subtitle1" sx={{ color: "#fff", fontWeight: 700, mb: 1 }}>{s.title}</Typography>
+                  <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)", lineHeight: 1.7 }}>{s.desc}</Typography>
+
+                  {/* Connector line for desktop */}
+                  {i < 3 && (
+                    <Box sx={{
+                      display: { xs: "none", md: "block" },
+                      position: "absolute",
+                      top: "50%",
+                      right: -16,
+                      width: 32,
+                      height: 2,
+                      background: `linear-gradient(90deg, ${s.color}40, transparent)`,
+                      zIndex: 1,
+                    }} />
+                  )}
                 </Box>
               </Grid>
             ))}
           </Grid>
         </Box>
 
-        <Box sx={{ mt: 4, bgcolor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 2, p: { xs: 3, md: 4 } }}>
-          <Typography variant="h5" sx={{ color: "#fff", mb: 2 }}>Minimum Trade Sizes</Typography>
+        {/* Minimum Trade Sizes - Visual cards */}
+        <Box sx={{ mt: 8 }}>
+          <Typography variant="h4" sx={{ color: "#fff", mb: 1, fontWeight: 700 }}>Minimum Trade Sizes</Typography>
+          <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)", mb: 3 }}>Institutional minimums for OTC execution</Typography>
+
           <Grid container spacing={2}>
             {[
-              { asset: "BTC", min: "1 BTC (~$67,000)" },
-              { asset: "ETH", min: "10 ETH (~$35,000)" },
-              { asset: "SOL", min: "100 SOL (~$17,000)" },
-              { asset: "Stablecoins", min: "$10,000 USDT/USDC" },
-              { asset: "Fiat", min: "$10,000 USD/EUR/GBP" },
-              { asset: "Other", min: "Varies by asset" },
+              { asset: "BTC", min: "1 BTC", usd: "~$67,000", color: "#f59e0b" },
+              { asset: "ETH", min: "10 ETH", usd: "~$35,000", color: "#3b82f6" },
+              { asset: "SOL", min: "100 SOL", usd: "~$17,000", color: "#8b5cf6" },
+              { asset: "Stablecoins", min: "$10,000", usd: "USDT/USDC", color: "#22c55e" },
+              { asset: "Fiat", min: "$10,000", usd: "USD/EUR/GBP", color: "#06b6d4" },
+              { asset: "Other", min: "Varies", usd: "by asset", color: "#6b7280" },
             ].map((item, i) => (
               <Grid size={{ xs: 6, sm: 4, md: 2 }} key={i}>
-                <Box sx={{ textAlign: "center", p: 2, bgcolor: "rgba(255,255,255,0.03)", borderRadius: 1.5 }}>
-                  <Typography variant="subtitle2" sx={{ color: "#fff", fontWeight: 700, mb: 0.5 }}>{item.asset}</Typography>
-                  <Typography variant="caption" sx={{ color: "#666" }}>{item.min}</Typography>
+                <Box sx={{
+                  textAlign: "center",
+                  p: 2.5,
+                  bgcolor: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  borderRadius: 2,
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    bgcolor: "rgba(255,255,255,0.04)",
+                    borderColor: `${item.color}30`,
+                  },
+                }}>
+                  <Box sx={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: "10px",
+                    background: `linear-gradient(135deg, ${item.color}15 0%, ${item.color}05 100%)`,
+                    border: `1px solid ${item.color}20`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mx: "auto",
+                    mb: 1.5,
+                  }}>
+                    <Typography variant="subtitle2" sx={{
+                      fontWeight: 800,
+                      color: item.color,
+                      fontSize: "0.75rem",
+                    }}>
+                      {item.asset.substring(0, 3)}
+                    </Typography>
+                  </Box>
+                  <Typography variant="subtitle2" sx={{ color: "#fff", fontWeight: 700, mb: 0.5, fontSize: "0.9rem" }}>{item.asset}</Typography>
+                  <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)", display: "block" }}>{item.min}</Typography>
+                  <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.3)", fontSize: "0.65rem" }}>{item.usd}</Typography>
                 </Box>
               </Grid>
             ))}
@@ -504,51 +901,140 @@ function OTCDeskPage() {
 function CustodyPage() {
   return (
     <Box>
-      <PageHeader title="Institutional Custody" subtitle="Protect your digital assets with our SOC 2 Type II certified custody solution. Multi-signature cold storage backed by $250M insurance coverage." badge="Custody" />
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <PageHeader
+        title="Institutional Custody"
+        subtitle="Protect your digital assets with our SOC 2 Type II certified custody solution. Multi-signature cold storage backed by $250M insurance coverage."
+        badge="Custody"
+        variant="security"
+      />
+      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+        {/* Security feature cards */}
         <Grid container spacing={3}>
           {[
-            { icon: <ShieldIcon />, title: "$250M Insurance", desc: "Comprehensive insurance coverage against theft, fraud, and employee dishonesty." },
-            { icon: <LockIcon />, title: "Multi-Sig Cold Storage", desc: "Air-gapped cold storage with 3-of-5 multi-signature authorization for all withdrawals." },
-            { icon: <VerifiedUserIcon />, title: "SOC 2 Type II", desc: "Audited annually by Big Four firms with full compliance reports available on request." },
-            { icon: <GavelIcon />, title: "Regulatory Compliance", desc: "Licensed custodian in multiple jurisdictions with full segregation of client assets." },
+            { icon: <ShieldIcon />, title: "$250M Insurance", desc: "Comprehensive insurance coverage against theft, fraud, and employee dishonesty.", color: "#f59e0b" },
+            { icon: <LockIcon />, title: "Multi-Sig Cold Storage", desc: "Air-gapped cold storage with 3-of-5 multi-signature authorization for all withdrawals.", color: "#ef4444" },
+            { icon: <VerifiedUserIcon />, title: "SOC 2 Type II", desc: "Audited annually by Big Four firms with full compliance reports available on request.", color: "#22c55e" },
+            { icon: <GavelIcon />, title: "Regulatory Compliance", desc: "Licensed custodian in multiple jurisdictions with full segregation of client assets.", color: "#3b82f6" },
           ].map((f, i) => (
             <Grid size={{ xs: 12, sm: 6 }} key={i}>
-              <Card elevation={0} sx={{ height: "100%" }}>
+              <Card elevation={0} className="feature-card-animated hover-lift" sx={{ height: "100%" }}>
                 <CardContent sx={{ p: 3 }}>
-                  <Box sx={{ width: 44, height: 44, borderRadius: "10px", bgcolor: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", mb: 2, color: "#fff" }}>{f.icon}</Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#fff", mb: 0.5 }}>{f.title}</Typography>
-                  <Typography variant="body2" sx={{ color: "#666", lineHeight: 1.7 }}>{f.desc}</Typography>
+                  <Box sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: "12px",
+                    background: `linear-gradient(135deg, ${f.color}15 0%, ${f.color}05 100%)`,
+                    border: `1px solid ${f.color}20`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mb: 2.5,
+                    color: f.color,
+                  }}>{f.icon}</Box>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#fff", mb: 1 }}>{f.title}</Typography>
+                  <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)", lineHeight: 1.7 }}>{f.desc}</Typography>
                 </CardContent>
               </Card>
             </Grid>
           ))}
         </Grid>
 
-        <Box sx={{ mt: 6, bgcolor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 2, p: { xs: 3, md: 4 } }}>
-          <Typography variant="h5" sx={{ color: "#fff", mb: 3 }}>Security Architecture</Typography>
+        {/* Security Architecture - Visual layout */}
+        <Box sx={{ mt: 8 }}>
+          <Box sx={{ textAlign: "center", mb: 5 }}>
+            <Typography variant="h4" sx={{ color: "#fff", mb: 1, fontWeight: 700 }}>Security Architecture</Typography>
+            <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)" }}>Multi-layered defense protecting your digital assets</Typography>
+          </Box>
+
           <Grid container spacing={3}>
             {[
-              { title: "Key Sharding", desc: "Private keys split into 5 shards across geographically distributed HSMs. No single shard can reconstruct the key." },
-              { title: "Geographic Distribution", desc: "Vaults located in Zurich, Singapore, and New York with biometric access controls and 24/7 armed security." },
-              { title: "Audit Trail", desc: "Every action logged immutably with timestamp and actor identity. Full audit reports available via API." },
-              { title: "Withdrawal Controls", desc: "Configurable withdrawal limits, whitelisted addresses, and time-locked transactions for enhanced security." },
+              { title: "Key Sharding", desc: "Private keys split into 5 shards across geographically distributed HSMs. No single shard can reconstruct the key.", icon: "01", color: "#f59e0b" },
+              { title: "Geographic Distribution", desc: "Vaults located in Zurich, Singapore, and New York with biometric access controls and 24/7 armed security.", icon: "02", color: "#ef4444" },
+              { title: "Audit Trail", desc: "Every action logged immutably with timestamp and actor identity. Full audit reports available via API.", icon: "03", color: "#3b82f6" },
+              { title: "Withdrawal Controls", desc: "Configurable withdrawal limits, whitelisted addresses, and time-locked transactions for enhanced security.", icon: "04", color: "#8b5cf6" },
             ].map((item, i) => (
               <Grid size={{ xs: 12, sm: 6 }} key={i}>
-                <Box sx={{ p: 2.5, bgcolor: "rgba(255,255,255,0.03)", borderRadius: 1.5 }}>
-                  <Typography variant="subtitle1" sx={{ color: "#fff", fontWeight: 600, mb: 0.5 }}>{item.title}</Typography>
-                  <Typography variant="body2" sx={{ color: "#666", lineHeight: 1.7 }}>{item.desc}</Typography>
+                <Box sx={{
+                  p: 3,
+                  height: "100%",
+                  bgcolor: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  borderRadius: 3,
+                  position: "relative",
+                  overflow: "hidden",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    bgcolor: "rgba(255,255,255,0.04)",
+                    borderColor: `${item.color}30`,
+                    "& .security-number": {
+                      opacity: 0.15,
+                    },
+                  },
+                }}>
+                  {/* Background number */}
+                  <Typography
+                    className="security-number"
+                    sx={{
+                      position: "absolute",
+                      top: -20,
+                      right: -10,
+                      fontSize: "8rem",
+                      fontWeight: 900,
+                      color: item.color,
+                      opacity: 0.05,
+                      lineHeight: 1,
+                      transition: "opacity 0.3s ease",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    {item.icon}
+                  </Typography>
+
+                  <Box sx={{ position: "relative", zIndex: 1 }}>
+                    <Box sx={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: 32,
+                      height: 32,
+                      borderRadius: "8px",
+                      background: `linear-gradient(135deg, ${item.color}20 0%, ${item.color}05 100%)`,
+                      border: `1px solid ${item.color}30`,
+                      mb: 2,
+                    }}>
+                      <Typography variant="caption" sx={{ fontWeight: 800, color: item.color, fontSize: "0.7rem" }}>{item.icon}</Typography>
+                    </Box>
+
+                    <Typography variant="subtitle1" sx={{ color: "#fff", fontWeight: 700, mb: 1 }}>{item.title}</Typography>
+                    <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)", lineHeight: 1.7 }}>{item.desc}</Typography>
+                  </Box>
                 </Box>
               </Grid>
             ))}
           </Grid>
         </Box>
 
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h5" sx={{ color: "#fff", mb: 2 }}>Supported Assets</Typography>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-            {["BTC", "ETH", "SOL", "BNB", "XRP", "ADA", "DOT", "AVAX", "LINK", "MATIC", "USDT", "USDC", "DAI", "AND 150+ MORE"].map((asset) => (
-              <Chip key={asset} label={asset} sx={{ bgcolor: "rgba(255,255,255,0.06)", color: "#ccc", border: "1px solid rgba(255,255,255,0.1)" }} />
+        {/* Supported Assets */}
+        <Box sx={{ mt: 8 }}>
+          <Typography variant="h4" sx={{ color: "#fff", mb: 3, fontWeight: 700 }}>Supported Assets</Typography>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
+            {["BTC", "ETH", "SOL", "BNB", "XRP", "ADA", "DOT", "AVAX", "LINK", "MATIC", "USDT", "USDC", "DAI", "AND 150+ MORE"].map((asset, i) => (
+              <Chip
+                key={asset}
+                label={asset}
+                sx={{
+                  bgcolor: i === 13 ? "rgba(59, 130, 246, 0.1)" : "rgba(255,255,255,0.04)",
+                  color: i === 13 ? "#60a5fa" : "rgba(255,255,255,0.7)",
+                  border: `1px solid ${i === 13 ? "rgba(59, 130, 246, 0.2)" : "rgba(255,255,255,0.08)"}`,
+                  fontWeight: 600,
+                  fontSize: "0.8rem",
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    bgcolor: "rgba(255,255,255,0.08)",
+                    borderColor: "rgba(255,255,255,0.15)",
+                  },
+                }}
+              />
             ))}
           </Box>
         </Box>
@@ -707,51 +1193,176 @@ console.log(order.id); // "ord_abc123"`}
 function EnterprisePage() {
   return (
     <Box>
-      <PageHeader title="Enterprise Solutions" subtitle="Custom-built crypto infrastructure for institutions. From dedicated infrastructure to custom integrations, we build solutions that scale with your business." badge="Enterprise" />
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <PageHeader
+        title="Enterprise Solutions"
+        subtitle="Custom-built crypto infrastructure for institutions. From dedicated infrastructure to custom integrations, we build solutions that scale with your business."
+        badge="Enterprise"
+        variant="enterprise"
+      />
+      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+        {/* Feature cards */}
         <Grid container spacing={3}>
           {[
-            { icon: <BusinessCenterIcon />, title: "Dedicated Infrastructure", desc: "Isolated matching engine, custody, and network infrastructure for maximum performance and security." },
-            { icon: <AccountTreeIcon />, title: "Custom Integrations", desc: "Tailored API integrations with your existing OMS, EMS, and accounting systems." },
-            { icon: <WorkIcon />, title: "White Label Solutions", desc: "Launch your own branded crypto exchange with our turnkey white-label platform." },
-            { icon: <SupportAgentIcon />, title: "Priority Support", desc: "Dedicated account team with 24/7 support and guaranteed response times under 15 minutes." },
+            { icon: <BusinessCenterIcon />, title: "Dedicated Infrastructure", desc: "Isolated matching engine, custody, and network infrastructure for maximum performance and security.", color: "#8b5cf6" },
+            { icon: <AccountTreeIcon />, title: "Custom Integrations", desc: "Tailored API integrations with your existing OMS, EMS, and accounting systems.", color: "#3b82f6" },
+            { icon: <WorkIcon />, title: "White Label Solutions", desc: "Launch your own branded crypto exchange with our turnkey white-label platform.", color: "#22c55e" },
+            { icon: <SupportAgentIcon />, title: "Priority Support", desc: "Dedicated account team with 24/7 support and guaranteed response times under 15 minutes.", color: "#06b6d4" },
           ].map((f, i) => (
             <Grid size={{ xs: 12, sm: 6 }} key={i}>
-              <Card elevation={0} sx={{ height: "100%" }}>
+              <Card elevation={0} className="feature-card-animated hover-lift" sx={{ height: "100%" }}>
                 <CardContent sx={{ p: 3 }}>
-                  <Box sx={{ width: 44, height: 44, borderRadius: "10px", bgcolor: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", mb: 2, color: "#fff" }}>{f.icon}</Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#fff", mb: 0.5 }}>{f.title}</Typography>
-                  <Typography variant="body2" sx={{ color: "#666", lineHeight: 1.7 }}>{f.desc}</Typography>
+                  <Box sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: "12px",
+                    background: `linear-gradient(135deg, ${f.color}15 0%, ${f.color}05 100%)`,
+                    border: `1px solid ${f.color}20`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mb: 2.5,
+                    color: f.color,
+                  }}>{f.icon}</Box>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#fff", mb: 1 }}>{f.title}</Typography>
+                  <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)", lineHeight: 1.7 }}>{f.desc}</Typography>
                 </CardContent>
               </Card>
             </Grid>
           ))}
         </Grid>
 
-        <Box sx={{ mt: 6, bgcolor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 2, p: { xs: 3, md: 4 } }}>
-          <Typography variant="h5" sx={{ color: "#fff", mb: 3 }}>Enterprise Plans</Typography>
-          <Grid container spacing={3}>
+        {/* Enterprise Plans - Enhanced pricing */}
+        <Box sx={{ mt: 8 }}>
+          <Box sx={{ textAlign: "center", mb: 5 }}>
+            <Typography variant="h4" sx={{ color: "#fff", mb: 1, fontWeight: 700 }}>Enterprise Plans</Typography>
+            <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)" }}>Scalable pricing for teams of all sizes</Typography>
+          </Box>
+
+          <Grid container spacing={3} sx={{ alignItems: "stretch" }}>
             {[
-              { name: "Professional", price: "$2,500", period: "/month", features: ["Up to 50 API keys", "100K trades/month", "Standard custody", "Email support", "Basic reporting"] },
-              { name: "Enterprise", price: "$10,000", period: "/month", features: ["Unlimited API keys", "Unlimited trades", "Institutional custody", "24/7 priority support", "Custom integrations", "Dedicated account manager"] },
-              { name: "Custom", price: "Contact Us", period: "", features: ["Dedicated infrastructure", "White-label options", "Custom SLA", "On-site support", "Regulatory assistance", "Custom fee structure"] },
+              { name: "Professional", price: "$2,500", period: "/month", features: ["Up to 50 API keys", "100K trades/month", "Standard custody", "Email support", "Basic reporting"], popular: false, color: "#6b7280" },
+              { name: "Enterprise", price: "$10,000", period: "/month", features: ["Unlimited API keys", "Unlimited trades", "Institutional custody", "24/7 priority support", "Custom integrations", "Dedicated account manager"], popular: true, color: "#8b5cf6" },
+              { name: "Custom", price: "Contact Us", period: "", features: ["Dedicated infrastructure", "White-label options", "Custom SLA", "On-site support", "Regulatory assistance", "Custom fee structure"], popular: false, color: "#3b82f6" },
             ].map((plan, i) => (
               <Grid size={{ xs: 12, md: 4 }} key={i}>
-                <Card elevation={0} sx={{ height: "100%", border: i === 1 ? "1px solid rgba(255,255,255,0.2)" : undefined }}>
-                  <CardContent sx={{ p: 3 }}>
-                    <Typography variant="subtitle1" sx={{ color: "#999", fontWeight: 600, mb: 1 }}>{plan.name}</Typography>
-                    <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5, mb: 2 }}>
-                      <Typography variant="h4" sx={{ color: "#fff", fontWeight: 700 }}>{plan.price}</Typography>
-                      <Typography variant="body2" sx={{ color: "#666" }}>{plan.period}</Typography>
-                    </Box>
-                    <Divider sx={{ borderColor: "rgba(255,255,255,0.08)", mb: 2 }} />
-                    {plan.features.map((f, j) => (
-                      <Box key={j} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                        <CheckCircleOutlineIcon sx={{ fontSize: 16, color: "#22c55e" }} />
-                        <Typography variant="body2" sx={{ color: "#999", fontSize: "0.85rem" }}>{f}</Typography>
+                <Card
+                  elevation={0}
+                  className={plan.popular ? "pricing-popular" : ""}
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative",
+                    overflow: "hidden",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      transform: "translateY(-4px)",
+                      boxShadow: plan.popular ? "0 20px 60px rgba(139, 92, 246, 0.15)" : "0 12px 40px rgba(0,0,0,0.3)",
+                    },
+                  }}
+                >
+                  {plan.popular && (
+                    <Box sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "3px",
+                      background: "linear-gradient(90deg, #8b5cf6, #3b82f6)",
+                    }} />
+                  )}
+
+                  <CardContent sx={{ p: 3.5, flex: 1, display: "flex", flexDirection: "column" }}>
+                    {/* Plan header */}
+                    <Box sx={{ mb: 3 }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+                        <Box sx={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: "10px",
+                          background: `linear-gradient(135deg, ${plan.color}20 0%, ${plan.color}05 100%)`,
+                          border: `1px solid ${plan.color}30`,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}>
+                          <Typography variant="subtitle2" sx={{ fontWeight: 800, color: plan.color, fontSize: "0.7rem" }}>
+                            {i === 0 ? "PRO" : i === 1 ? "ENT" : "CUS"}
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <Typography variant="subtitle1" sx={{ color: "#fff", fontWeight: 700 }}>{plan.name}</Typography>
+                          {plan.popular && (
+                            <Chip
+                              label="Most Popular"
+                              size="small"
+                              sx={{
+                                height: 18,
+                                fontSize: "0.6rem",
+                                fontWeight: 700,
+                                bgcolor: "rgba(139, 92, 246, 0.15)",
+                                color: "#a78bfa",
+                                border: "1px solid rgba(139, 92, 246, 0.25)",
+                              }}
+                            />
+                          )}
+                        </Box>
                       </Box>
-                    ))}
-                    <Button variant={i === 1 ? "contained" : "outlined"} fullWidth sx={{ mt: 2 }}>
+
+                      <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+                        <Typography variant="h3" sx={{ color: "#fff", fontWeight: 800, fontSize: "2rem" }}>{plan.price}</Typography>
+                        {plan.period && (
+                          <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.4)" }}>{plan.period}</Typography>
+                        )}
+                      </Box>
+                    </Box>
+
+                    <Divider sx={{ borderColor: "rgba(255,255,255,0.06)", mb: 2.5 }} />
+
+                    {/* Features list */}
+                    <Box sx={{ flex: 1 }}>
+                      {plan.features.map((f, j) => (
+                        <Box key={j} sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
+                          <Box sx={{
+                            width: 20,
+                            height: 20,
+                            borderRadius: "50%",
+                            bgcolor: "rgba(34, 197, 94, 0.1)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            flexShrink: 0,
+                          }}>
+                            <CheckCircleOutlinedIcon sx={{ fontSize: 14, color: "#4ade80" }} />
+                          </Box>
+                          <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.7)", fontSize: "0.85rem" }}>{f}</Typography>
+                        </Box>
+                      ))}
+                    </Box>
+
+                    <Button
+                      variant={plan.popular ? "contained" : "outlined"}
+                      fullWidth
+                      sx={{
+                        mt: 3,
+                        py: 1.5,
+                        fontWeight: 700,
+                        ...(plan.popular ? {
+                          background: "linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%)",
+                          color: "#fff",
+                          "&:hover": {
+                            background: "linear-gradient(135deg, #7c3aed 0%, #2563eb 100%)",
+                          },
+                        } : {
+                          borderColor: "rgba(255,255,255,0.15)",
+                          color: "#fff",
+                          "&:hover": {
+                            borderColor: "rgba(255,255,255,0.3)",
+                            bgcolor: "rgba(255,255,255,0.03)",
+                          },
+                        }),
+                      }}
+                    >
                       {i === 2 ? "Contact Sales" : "Get Started"}
                     </Button>
                   </CardContent>
@@ -949,7 +1560,7 @@ function PartnersPage() {
             ].map((benefit, i) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                  <CheckCircleOutlineIcon sx={{ color: "#22c55e", fontSize: 20 }} />
+                  <CheckCircleOutlinedIcon sx={{ color: "#22c55e", fontSize: 20 }} />
                   <Typography variant="body2" sx={{ color: "#999" }}>{benefit}</Typography>
                 </Box>
               </Grid>
@@ -1058,53 +1669,197 @@ function StatusPage() {
 
   return (
     <Box>
-      <PageHeader title="System Status" subtitle="Real-time status of all MATBEA Enterprise services and infrastructure." badge="Status" />
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box sx={{ bgcolor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 2, overflow: "hidden" }}>
+      <PageHeader
+        title="System Status"
+        subtitle="Real-time status of all MATBEA Enterprise services and infrastructure."
+        badge="Status"
+        variant="trading"
+      />
+      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+        {/* Overall status banner */}
+        <Box sx={{
+          mb: 4,
+          p: 3,
+          bgcolor: "rgba(34, 197, 94, 0.05)",
+          border: "1px solid rgba(34, 197, 94, 0.15)",
+          borderRadius: 3,
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+        }}>
+          <Box sx={{
+            width: 48,
+            height: 48,
+            borderRadius: "50%",
+            bgcolor: "rgba(34, 197, 94, 0.1)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+          }}>
+            <Box sx={{
+              width: 12,
+              height: 12,
+              borderRadius: "50%",
+              bgcolor: "#22c55e",
+              boxShadow: "0 0 20px rgba(34, 197, 94, 0.5)",
+            }} />
+          </Box>
+          <Box>
+            <Typography variant="h6" sx={{ color: "#4ade80", fontWeight: 700 }}>All Systems Operational</Typography>
+            <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)" }}>Last updated: 2 minutes ago</Typography>
+          </Box>
+        </Box>
+
+        {/* Services list */}
+        <Box sx={{
+          bgcolor: "rgba(255,255,255,0.02)",
+          border: "1px solid rgba(255,255,255,0.06)",
+          borderRadius: 3,
+          overflow: "hidden",
+        }}>
           {services.map((service, i) => (
-            <Box key={i} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 3, py: 2, borderBottom: i < services.length - 1 ? "1px solid rgba(255,255,255,0.04)" : undefined, "&:hover": { bgcolor: "rgba(255,255,255,0.02)" } }}>
+            <Box
+              key={i}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                px: 3,
+                py: 2.5,
+                borderBottom: i < services.length - 1 ? "1px solid rgba(255,255,255,0.04)" : undefined,
+                transition: "all 0.2s ease",
+                "&:hover": { bgcolor: "rgba(255,255,255,0.02)" },
+              }}
+            >
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: service.color }} />
-                <Typography variant="body1" sx={{ color: "#fff", fontWeight: 500 }}>{service.name}</Typography>
+                <Box sx={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: "50%",
+                  bgcolor: service.color,
+                  boxShadow: `0 0 10px ${service.color}50`,
+                  position: "relative",
+                }}>
+                  {service.color === "#f59e0b" && (
+                    <Box sx={{
+                      position: "absolute",
+                      inset: -4,
+                      borderRadius: "50%",
+                      border: "2px solid",
+                      borderColor: `${service.color}30`,
+                      animation: "ripple 2s ease-out infinite",
+                    }} />
+                  )}
+                </Box>
+                <Typography variant="body1" sx={{ color: "#fff", fontWeight: 600 }}>{service.name}</Typography>
               </Box>
               <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
-                <Typography variant="body2" sx={{ color: service.color, fontWeight: 600 }}>{service.status}</Typography>
-                <Typography variant="body2" sx={{ color: "#666" }}>{service.uptime} uptime</Typography>
+                <Chip
+                  label={service.status}
+                  size="small"
+                  sx={{
+                    bgcolor: `${service.color}15`,
+                    color: service.color,
+                    border: `1px solid ${service.color}25`,
+                    fontWeight: 600,
+                    fontSize: "0.7rem",
+                  }}
+                />
+                <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)", fontFamily: "'JetBrains Mono', monospace", fontSize: "0.85rem" }}>
+                  {service.uptime}
+                </Typography>
               </Box>
             </Box>
           ))}
         </Box>
 
-        <Box sx={{ mt: 4, bgcolor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 2, p: 3 }}>
-          <Typography variant="h6" sx={{ color: "#fff", mb: 2 }}>90-Day Uptime History</Typography>
+        {/* 90-Day Uptime History */}
+        <Box sx={{ mt: 6, p: 3, bgcolor: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 3 }}>
+            <Typography variant="h6" sx={{ color: "#fff", fontWeight: 700 }}>90-Day Uptime History</Typography>
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                <Box sx={{ width: 8, height: 8, borderRadius: 2, bgcolor: "#22c55e" }} />
+                <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>99.95%+</Typography>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                <Box sx={{ width: 8, height: 8, borderRadius: 2, bgcolor: "#f59e0b" }} />
+                <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>99.9%+</Typography>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                <Box sx={{ width: 8, height: 8, borderRadius: 2, bgcolor: "#ef4444" }} />
+                <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)" }}>&lt;99.9%</Typography>
+              </Box>
+            </Box>
+          </Box>
+
           <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
             {Array.from({ length: 90 }, (_, i) => {
               const uptime = i === 47 ? 99.85 : 99.95 + Math.random() * 0.05;
               return (
-                <Box key={i} sx={{ width: 8, height: 32, borderRadius: 1, bgcolor: uptime >= 99.95 ? "#22c55e" : uptime >= 99.9 ? "#f59e0b" : "#ef4444", opacity: 0.7 }} />
+                <Box
+                  key={i}
+                  sx={{
+                    width: 8,
+                    height: 32,
+                    borderRadius: 1,
+                    bgcolor: uptime >= 99.95 ? "#22c55e" : uptime >= 99.9 ? "#f59e0b" : "#ef4444",
+                    opacity: 0.7,
+                    transition: "all 0.2s ease",
+                    cursor: "pointer",
+                    "&:hover": {
+                      opacity: 1,
+                      transform: "scaleY(1.3)",
+                    },
+                  }}
+                  title={`Day ${90 - i}: ${uptime.toFixed(2)}%`}
+                />
               );
             })}
           </Box>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-            <Typography variant="caption" sx={{ color: "#666" }}>90 days ago</Typography>
-            <Typography variant="caption" sx={{ color: "#666" }}>Today</Typography>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1.5 }}>
+            <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.4)" }}>90 days ago</Typography>
+            <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.4)" }}>Today</Typography>
           </Box>
         </Box>
 
-        <Box sx={{ mt: 4, display: "flex", gap: 2 }}>
-          <Box sx={{ flex: 1, bgcolor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 2, p: 3, textAlign: "center" }}>
-            <Typography variant="h4" sx={{ color: "#22c55e", fontWeight: 700, mb: 0.5 }}>99.99%</Typography>
-            <Typography variant="body2" sx={{ color: "#666" }}>Overall Uptime (30d)</Typography>
-          </Box>
-          <Box sx={{ flex: 1, bgcolor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 2, p: 3, textAlign: "center" }}>
-            <Typography variant="h4" sx={{ color: "#fff", fontWeight: 700, mb: 0.5 }}>0</Typography>
-            <Typography variant="body2" sx={{ color: "#666" }}>Major Incidents (30d)</Typography>
-          </Box>
-          <Box sx={{ flex: 1, bgcolor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 2, p: 3, textAlign: "center" }}>
-            <Typography variant="h4" sx={{ color: "#fff", fontWeight: 700, mb: 0.5 }}>{"< 50ms"}</Typography>
-            <Typography variant="body2" sx={{ color: "#666" }}>Avg Response Time</Typography>
-          </Box>
-        </Box>
+        {/* Stats cards */}
+        <Grid container spacing={3} sx={{ mt: 2 }}>
+          {[
+            { value: "99.99%", label: "Overall Uptime (30d)", color: "#22c55e" },
+            { value: "0", label: "Major Incidents (30d)", color: "#3b82f6" },
+            { value: "< 50ms", label: "Avg Response Time", color: "#8b5cf6" },
+          ].map((stat, i) => (
+            <Grid size={{ xs: 12, md: 4 }} key={i}>
+              <Box sx={{
+                p: 3,
+                textAlign: "center",
+                bgcolor: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.06)",
+                borderRadius: 3,
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  bgcolor: "rgba(255,255,255,0.04)",
+                  borderColor: `${stat.color}30`,
+                },
+              }}>
+                <Typography variant="h3" sx={{
+                  fontWeight: 800,
+                  mb: 0.5,
+                  fontSize: "2rem",
+                  background: `linear-gradient(135deg, ${stat.color}, ${stat.color}99)`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}>
+                  {stat.value}
+                </Typography>
+                <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)" }}>{stat.label}</Typography>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
       </Container>
     </Box>
   );
@@ -1113,37 +1868,90 @@ function StatusPage() {
 function SecurityPage() {
   return (
     <Box>
-      <PageHeader title="Security" subtitle="MATBEA Enterprise employs military-grade security measures to protect your assets and data. Our security infrastructure is audited by leading firms." badge="Security" />
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <PageHeader
+        title="Security"
+        subtitle="MATBEA Enterprise employs military-grade security measures to protect your assets and data. Our security infrastructure is audited by leading firms."
+        badge="Security"
+        variant="security"
+      />
+      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         <Grid container spacing={3}>
           {[
-            { icon: <ShieldIcon />, title: "Cold Storage", desc: "95% of client assets stored in air-gapped cold wallets with multi-signature authorization." },
-            { icon: <SecurityIcon />, title: "SOC 2 Type II", desc: "Annual audits by Deloitte with full reports available under NDA." },
-            { icon: <LockIcon />, title: "Encryption", desc: "AES-256 encryption at rest, TLS 1.3 in transit. All keys managed via HSMs." },
-            { icon: <VerifiedUserIcon />, title: "Bug Bounty", desc: "Active bug bounty program with rewards up to $100,000 for critical vulnerabilities." },
-            { icon: <HealthAndSafetyIcon />, title: "Insurance", desc: "$250M insurance policy covering theft, fraud, and employee dishonesty." },
-            { icon: <GavelIcon />, title: "Compliance", desc: "Licensed in 15+ jurisdictions with full AML/KYC and regulatory compliance." },
+            { icon: <ShieldIcon />, title: "Cold Storage", desc: "95% of client assets stored in air-gapped cold wallets with multi-signature authorization.", color: "#f59e0b" },
+            { icon: <SecurityIcon />, title: "SOC 2 Type II", desc: "Annual audits by Deloitte with full reports available under NDA.", color: "#22c55e" },
+            { icon: <LockIcon />, title: "Encryption", desc: "AES-256 encryption at rest, TLS 1.3 in transit. All keys managed via HSMs.", color: "#3b82f6" },
+            { icon: <VerifiedUserIcon />, title: "Bug Bounty", desc: "Active bug bounty program with rewards up to $100,000 for critical vulnerabilities.", color: "#8b5cf6" },
+            { icon: <HealthAndSafetyIcon />, title: "Insurance", desc: "$250M insurance policy covering theft, fraud, and employee dishonesty.", color: "#ef4444" },
+            { icon: <GavelIcon />, title: "Compliance", desc: "Licensed in 15+ jurisdictions with full AML/KYC and regulatory compliance.", color: "#06b6d4" },
           ].map((f, i) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
-              <Card elevation={0} sx={{ height: "100%" }}>
+              <Card elevation={0} className="feature-card-animated hover-lift" sx={{ height: "100%" }}>
                 <CardContent sx={{ p: 3 }}>
-                  <Box sx={{ width: 44, height: 44, borderRadius: "10px", bgcolor: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center", mb: 2, color: "#fff" }}>{f.icon}</Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#fff", mb: 0.5 }}>{f.title}</Typography>
-                  <Typography variant="body2" sx={{ color: "#666", lineHeight: 1.7 }}>{f.desc}</Typography>
+                  <Box sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: "12px",
+                    background: `linear-gradient(135deg, ${f.color}15 0%, ${f.color}05 100%)`,
+                    border: `1px solid ${f.color}20`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mb: 2.5,
+                    color: f.color,
+                  }}>{f.icon}</Box>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#fff", mb: 1 }}>{f.title}</Typography>
+                  <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)", lineHeight: 1.7 }}>{f.desc}</Typography>
                 </CardContent>
               </Card>
             </Grid>
           ))}
         </Grid>
 
-        <Box sx={{ mt: 6, bgcolor: "#111", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 2, p: { xs: 3, md: 4 } }}>
-          <Typography variant="h5" sx={{ color: "#fff", mb: 3 }}>Security Certifications</Typography>
+        {/* Security Certifications */}
+        <Box sx={{ mt: 8 }}>
+          <Box sx={{ textAlign: "center", mb: 5 }}>
+            <Typography variant="h4" sx={{ color: "#fff", mb: 1, fontWeight: 700 }}>Security Certifications</Typography>
+            <Typography variant="body2" sx={{ color: "rgba(255,255,255,0.5)" }}>Industry-leading compliance and security standards</Typography>
+          </Box>
+
           <Grid container spacing={2}>
-            {["SOC 2 Type II", "ISO 27001", "PCI DSS Level 1", "GDPR Compliant", "CCSS Level III", "NIST Framework"].map((cert, i) => (
+            {[
+              { name: "SOC 2 Type II", color: "#22c55e" },
+              { name: "ISO 27001", color: "#3b82f6" },
+              { name: "PCI DSS Level 1", color: "#8b5cf6" },
+              { name: "GDPR Compliant", color: "#06b6d4" },
+              { name: "CCSS Level III", color: "#f59e0b" },
+              { name: "NIST Framework", color: "#ef4444" },
+            ].map((cert, i) => (
               <Grid size={{ xs: 6, sm: 4, md: 2 }} key={i}>
-                <Box sx={{ textAlign: "center", p: 2, bgcolor: "rgba(255,255,255,0.03)", borderRadius: 1.5 }}>
-                  <GppGoodIcon sx={{ color: "#22c55e", fontSize: 32, mb: 1 }} />
-                  <Typography variant="body2" sx={{ color: "#fff", fontWeight: 600, fontSize: "0.8rem" }}>{cert}</Typography>
+                <Box sx={{
+                  textAlign: "center",
+                  p: 2.5,
+                  bgcolor: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  borderRadius: 2,
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    bgcolor: "rgba(255,255,255,0.04)",
+                    borderColor: `${cert.color}30`,
+                    transform: "translateY(-4px)",
+                  },
+                }}>
+                  <Box sx={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: "12px",
+                    background: `linear-gradient(135deg, ${cert.color}15 0%, ${cert.color}05 100%)`,
+                    border: `1px solid ${cert.color}20`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mx: "auto",
+                    mb: 1.5,
+                  }}>
+                    <GppGoodIcon sx={{ color: cert.color, fontSize: 24 }} />
+                  </Box>
+                  <Typography variant="body2" sx={{ color: "#fff", fontWeight: 600, fontSize: "0.8rem" }}>{cert.name}</Typography>
                 </Box>
               </Grid>
             ))}
@@ -1191,7 +1999,7 @@ function BugBountyPage() {
               <Typography variant="h6" sx={{ color: "#22c55e", mb: 1 }}>In Scope</Typography>
               {["*.matbea.com", "API endpoints (REST & WebSocket)", "Mobile applications (iOS & Android)", "Custody infrastructure", "Authentication systems"].map((item, i) => (
                 <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                  <CheckCircleOutlineIcon sx={{ color: "#22c55e", fontSize: 18 }} />
+                  <CheckCircleOutlinedIcon sx={{ color: "#22c55e", fontSize: 18 }} />
                   <Typography variant="body2" sx={{ color: "#999" }}>{item}</Typography>
                 </Box>
               ))}
@@ -1311,7 +2119,7 @@ function AMLKYCPage() {
               <Typography variant="h6" sx={{ color: "#fff", mb: 1 }}>For Entities</Typography>
               {["Certificate of Incorporation", "Articles of Organization", "Board Resolution", "Beneficial Ownership Declaration", "Source of Funds Evidence", "Audited Financial Statements"].map((doc, i) => (
                 <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                  <CheckCircleOutlineIcon sx={{ color: "#22c55e", fontSize: 18 }} />
+                  <CheckCircleOutlinedIcon sx={{ color: "#22c55e", fontSize: 18 }} />
                   <Typography variant="body2" sx={{ color: "#999" }}>{doc}</Typography>
                 </Box>
               ))}
@@ -1320,7 +2128,7 @@ function AMLKYCPage() {
               <Typography variant="h6" sx={{ color: "#fff", mb: 1 }}>For Individuals</Typography>
               {["Government-issued photo ID", "Proof of address (utility bill)", "Selfie verification", "Source of funds declaration", "Professional references"].map((doc, i) => (
                 <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                  <CheckCircleOutlineIcon sx={{ color: "#22c55e", fontSize: 18 }} />
+                  <CheckCircleOutlinedIcon sx={{ color: "#22c55e", fontSize: 18 }} />
                   <Typography variant="body2" sx={{ color: "#999" }}>{doc}</Typography>
                 </Box>
               ))}
@@ -1401,6 +2209,8 @@ function App() {
         <Route path="legal/aml-kyc" element={<AMLKYCPage />} />
         <Route path="legal/cookies" element={<CookiePolicyPage />} />
       </Route>
+      <Route path="login" element={<LoginPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

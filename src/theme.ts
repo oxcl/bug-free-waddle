@@ -36,7 +36,7 @@ const theme = createTheme({
     divider: "rgba(255, 255, 255, 0.08)",
   },
   typography: {
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+    fontFamily: "'Roboto', -apple-system, BlinkMacSystemFont, sans-serif",
     h1: {
       fontWeight: 800,
       letterSpacing: "-0.03em",

@@ -6,5 +6,19 @@
       "command": ["npx", "@browsermcp/mcp@latest"],
       "enabled": true
     }
+  },
+  "command": {
+    "comment": {
+      "description": "Find opportunities to add comments for code readability",
+      "template": "You are done. Go through the codebase and find opportunities to comment code to make it more readable and improve code readability for future agents."
+    },
+    "refactor": {
+      "description": "Find refactoring opportunities for cleaner code",
+      "template": "I want you to go through the codebase and find refactoring opportunities to make the code more readable and cleaner. Make sure all files are under 100 lines and all functions are under 60 lines."
+    },
+    "passdown": {
+      "description": "Generate a codebase summary for onboarding new developers",
+      "template": "Considering your understanding of the codebase and your current knowledge of the project, if you had to explain the codebase to a new junior developer hired for the project in a single paragraph less than 500 words, what would you tell them? The previous agent wrote an AGENTS.md file. Do you think that is still valid? If not, please write your own and overwrite the previous one in AGENTS.md. the AGENTS.md should be 500 words max. it should be the 500 words explanation of the codebase to a new hire as i said"
+    }
   }
 }
