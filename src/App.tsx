@@ -23,6 +23,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Avatar from "@mui/material/Avatar";
+import CircularProgress from "@mui/material/CircularProgress";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
@@ -74,19 +75,26 @@ import WalletsPage from "./pages/WalletsPage";
 import OrdersPage from "./pages/OrdersPage";
 import MarketsPage from "./pages/MarketsPage";
 import HistoryPage from "./pages/HistoryPage";
+import { useCoins } from "./components/CoinGeckoProvider";
+import { formatPrice, formatCompact } from "./api/coingecko";
+import type { CoinGeckoMarket } from "./api/coingecko";
 
-const coins = [
-  { name: "Bitcoin", symbol: "BTC", price: 67432.18, change: "+2.45", volume: "28.5B", marketCap: "1.32T" },
-  { name: "Ethereum", symbol: "ETH", price: 3521.67, change: "+1.82", volume: "15.2B", marketCap: "423.1B" },
-  { name: "Solana", symbol: "SOL", price: 178.93, change: "+5.67", volume: "4.8B", marketCap: "78.3B" },
-  { name: "Cardano", symbol: "ADA", price: 0.6234, change: "-1.23", volume: "892M", marketCap: "22.1B" },
-  { name: "XRP", symbol: "XRP", price: 0.5821, change: "+0.89", volume: "1.2B", marketCap: "31.7B" },
-  { name: "Polkadot", symbol: "DOT", price: 8.4521, change: "+3.21", volume: "567M", marketCap: "11.2B" },
-  { name: "Avalanche", symbol: "AVAX", price: 42.87, change: "-0.54", volume: "678M", marketCap: "16.3B" },
-  { name: "Chainlink", symbol: "LINK", price: 18.92, change: "+4.12", volume: "1.1B", marketCap: "11.1B" },
-  { name: "Dogecoin", symbol: "DOGE", price: 0.1523, change: "+8.45", volume: "2.3B", marketCap: "21.8B" },
-  { name: "Polygon", symbol: "MATIC", price: 0.7123, change: "+1.56", volume: "445M", marketCap: "6.6B" },
-];
+function CoinImage({ coin, size = 32 }: { coin: CoinGeckoMarket; size?: number }) {
+  return (
+    <Box
+      component="img"
+      src={coin.image}
+      alt={coin.name}
+      sx={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        objectFit: "cover",
+        border: "1px solid rgba(255,255,255,0.1)",
+      }}
+    />
+  );
+}
 
 const stats = [
   { value: "$76.2B", label: "24h Volume" },
@@ -95,30 +103,9 @@ const stats = [
   { value: "$250M", label: "Insurance" },
 ];
 
-const tradingPairs = [
-  { pair: "BTC/USDT", last: "67,432.18", high: "68,120.00", low: "65,890.00", volume: "423.5K", change: "+2.45%", up: true },
-  { pair: "ETH/USDT", last: "3,521.67", high: "3,580.00", low: "3,445.21", volume: "1.2M", change: "+1.82%", up: true },
-  { pair: "SOL/USDT", last: "178.93", high: "182.50", low: "169.20", volume: "3.8M", change: "+5.67%", up: true },
-  { pair: "BNB/USDT", last: "612.45", high: "618.00", low: "605.30", volume: "892K", change: "+0.93%", up: true },
-  { pair: "XRP/USDT", last: "0.5821", high: "0.5950", low: "0.5712", volume: "5.6M", change: "+0.89%", up: true },
-  { pair: "ADA/USDT", last: "0.6234", high: "0.6420", low: "0.6105", volume: "2.1M", change: "-1.23%", up: false },
-];
 
-const ratePairs: Record<string, number> = {
-  BTC: 67432.18,
-  ETH: 3521.67,
-  SOL: 178.93,
-  BNB: 612.45,
-  XRP: 0.5821,
-  ADA: 0.6234,
-  DOGE: 0.1523,
-  DOT: 8.4521,
-  AVAX: 42.87,
-  LINK: 18.92,
-  MATIC: 0.7123,
-  USDT: 1.0,
-  USDC: 1.0,
-};
+
+
 
 function HeroSection() {
   return (
@@ -348,9 +335,19 @@ function HeroSection() {
 }
 
 function RateCalculator() {
+  const { coins, loading } = useCoins();
   const [fromCurrency, setFromCurrency] = useState("BTC");
   const [toCurrency, setToCurrency] = useState("USDT");
   const [amount, setAmount] = useState("1");
+
+  const ratePairs = useMemo(() => {
+    const pairs: Record<string, number> = { USDT: 1, USDC: 1 };
+    for (const c of coins) {
+      const sym = c.symbol.toUpperCase();
+      if (!pairs[sym]) pairs[sym] = c.current_price;
+    }
+    return pairs;
+  }, [coins]);
 
   const numericAmount = useMemo(() => {
     const parsed = parseFloat(amount);
@@ -361,13 +358,13 @@ function RateCalculator() {
     const fromRate = ratePairs[fromCurrency] ?? 1;
     const toRate = ratePairs[toCurrency] ?? 1;
     return (numericAmount * fromRate) / toRate;
-  }, [numericAmount, fromCurrency, toCurrency]);
+  }, [numericAmount, fromCurrency, toCurrency, ratePairs]);
 
   const rate = useMemo(() => {
     const fromRate = ratePairs[fromCurrency] ?? 1;
     const toRate = ratePairs[toCurrency] ?? 1;
     return fromRate / toRate;
-  }, [fromCurrency, toCurrency]);
+  }, [fromCurrency, toCurrency, ratePairs]);
 
   const handleSwap = () => {
     setFromCurrency(toCurrency);
@@ -409,7 +406,7 @@ function RateCalculator() {
           <Divider sx={{ borderColor: "rgba(255,255,255,0.06)", mb: 2 }} />
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Typography variant="body2" sx={{ color: "#666" }}>1 {fromCurrency} = {rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 })} {toCurrency}</Typography>
-            <Typography variant="caption" sx={{ color: "#444" }}>Demo rates</Typography>
+            <Typography variant="caption" sx={{ color: "#444" }}>{loading ? "Loading..." : "Live rates via CoinGecko"}</Typography>
           </Box>
         </Card>
       </Container>
@@ -418,6 +415,9 @@ function RateCalculator() {
 }
 
 function MarketSection() {
+  const { coins: cgCoins, loading } = useCoins();
+  const displayCoins = cgCoins.slice(0, 10);
+
   return (
     <Box sx={{ py: { xs: 4, md: 5 }, position: "relative" }}>
       <Container maxWidth="lg">
@@ -435,27 +435,34 @@ function MarketSection() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {coins.map((coin, i) => (
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={6} sx={{ textAlign: "center", py: 4, borderBottom: "none" }}>
+                    <CircularProgress size={24} sx={{ color: "#666" }} />
+                    <Typography sx={{ color: "#666", mt: 1, fontSize: "0.8rem" }}>Loading market data...</Typography>
+                  </TableCell>
+                </TableRow>
+              ) : displayCoins.map((coin, i) => (
                 <TableRow key={coin.symbol} className="table-row-hover" sx={{ cursor: "pointer", transition: "background 0.2s", "& td": { borderBottom: "1px solid rgba(255,255,255,0.04)", py: 1.5 } }}>
                   <TableCell sx={{ color: "#666", fontWeight: 500, fontSize: "0.8rem" }}>{i + 1}</TableCell>
                   <TableCell>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                      <Avatar sx={{ width: 32, height: 32, bgcolor: "#222", fontWeight: 700, fontSize: "0.75rem", color: "#fff", border: "1px solid rgba(255,255,255,0.1)" }}>{coin.symbol.charAt(0)}</Avatar>
+                      <CoinImage coin={coin} size={32} />
                       <Box>
                         <Typography variant="body2" sx={{ color: "#fff", fontWeight: 600, fontSize: "0.85rem" }}>{coin.name}</Typography>
-                        <Typography variant="caption" sx={{ color: "#666", fontSize: "0.7rem" }}>{coin.symbol}</Typography>
+                        <Typography variant="caption" sx={{ color: "#666", fontSize: "0.7rem" }}>{coin.symbol.toUpperCase()}</Typography>
                       </Box>
                     </Box>
                   </TableCell>
-                  <TableCell sx={{ color: "#fff", fontWeight: 600, fontSize: "0.85rem" }}>${coin.price.toLocaleString()}</TableCell>
+                  <TableCell sx={{ color: "#fff", fontWeight: 600, fontSize: "0.85rem" }}>{formatPrice(coin.current_price)}</TableCell>
                   <TableCell>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                      {coin.change.startsWith("+") ? <TrendingUpIcon sx={{ fontSize: 14, color: "#22c55e" }} /> : <TrendingDownIcon sx={{ fontSize: 14, color: "#ef4444" }} />}
-                      <Typography sx={{ color: coin.change.startsWith("+") ? "#22c55e" : "#ef4444", fontWeight: 600, fontSize: "0.8rem" }}>{coin.change}%</Typography>
+                      {(coin.price_change_percentage_24h ?? 0) >= 0 ? <TrendingUpIcon sx={{ fontSize: 14, color: "#22c55e" }} /> : <TrendingDownIcon sx={{ fontSize: 14, color: "#ef4444" }} />}
+                      <Typography sx={{ color: (coin.price_change_percentage_24h ?? 0) >= 0 ? "#22c55e" : "#ef4444", fontWeight: 600, fontSize: "0.8rem" }}>{(coin.price_change_percentage_24h ?? 0).toFixed(2)}%</Typography>
                     </Box>
                   </TableCell>
-                  <TableCell sx={{ color: "#999", fontSize: "0.8rem" }}>${coin.volume}</TableCell>
-                  <TableCell sx={{ color: "#999", fontSize: "0.8rem" }}>${coin.marketCap}</TableCell>
+                  <TableCell sx={{ color: "#999", fontSize: "0.8rem" }}>${formatCompact(coin.total_volume)}</TableCell>
+                  <TableCell sx={{ color: "#999", fontSize: "0.8rem" }}>${formatCompact(coin.market_cap)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -472,6 +479,9 @@ function MarketSection() {
 }
 
 function TradingPairsSection() {
+  const { coins: cgCoins, loading } = useCoins();
+  const pairs = cgCoins.slice(0, 6);
+
   return (
     <Box sx={{ py: { xs: 4, md: 5 }, bgcolor: "#0a0a0a" }}>
       <Container maxWidth="lg">
@@ -480,25 +490,38 @@ function TradingPairsSection() {
           <Typography variant="body2" sx={{ color: "#666" }}>Deep liquidity and tight spreads</Typography>
         </Box>
         <Grid container spacing={2}>
-          {tradingPairs.map((tp) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={tp.pair}>
-              <Card elevation={0} sx={{ cursor: "pointer", "&:hover": { borderColor: "rgba(255,255,255,0.15)" } }}>
-                <CardContent sx={{ p: 2 }}>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "#fff", fontSize: "0.9rem" }}>{tp.pair}</Typography>
-                    <Chip label={tp.change} size="small" sx={{ bgcolor: tp.up ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)", color: tp.up ? "#22c55e" : "#ef4444", fontWeight: 600, fontSize: "0.7rem", height: 22 }} />
-                  </Box>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: "#fff", mb: 1.5, fontSize: "1.1rem" }}>${tp.last}</Typography>
-                  <MiniChart up={tp.up} />
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1.5, pt: 1.5, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-                    <Box><Typography variant="caption" sx={{ color: "#666", fontSize: "0.6rem", display: "block" }}>High</Typography><Typography variant="body2" sx={{ color: "#999", fontWeight: 500, fontSize: "0.75rem" }}>${tp.high}</Typography></Box>
-                    <Box><Typography variant="caption" sx={{ color: "#666", fontSize: "0.6rem", display: "block" }}>Low</Typography><Typography variant="body2" sx={{ color: "#999", fontWeight: 500, fontSize: "0.75rem" }}>${tp.low}</Typography></Box>
-                    <Box><Typography variant="caption" sx={{ color: "#666", fontSize: "0.6rem", display: "block" }}>Vol</Typography><Typography variant="body2" sx={{ color: "#999", fontWeight: 500, fontSize: "0.75rem" }}>{tp.volume}</Typography></Box>
-                  </Box>
-                </CardContent>
-              </Card>
+          {loading ? (
+            <Grid size={{ xs: 12 }}>
+              <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+                <CircularProgress size={24} sx={{ color: "#666" }} />
+              </Box>
             </Grid>
-          ))}
+          ) : pairs.map((coin) => {
+            const change = coin.price_change_percentage_24h ?? 0;
+            const isUp = change >= 0;
+            return (
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={coin.id}>
+                <Card elevation={0} sx={{ cursor: "pointer", "&:hover": { borderColor: "rgba(255,255,255,0.15)" } }}>
+                  <CardContent sx={{ p: 2 }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <CoinImage coin={coin} size={24} />
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700, color: "#fff", fontSize: "0.9rem" }}>{coin.symbol.toUpperCase()}/USDT</Typography>
+                      </Box>
+                      <Chip label={`${change >= 0 ? "+" : ""}${change.toFixed(2)}%`} size="small" sx={{ bgcolor: isUp ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)", color: isUp ? "#22c55e" : "#ef4444", fontWeight: 600, fontSize: "0.7rem", height: 22 }} />
+                    </Box>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: "#fff", mb: 1.5, fontSize: "1.1rem" }}>{formatPrice(coin.current_price)}</Typography>
+                    <MiniChart up={isUp} />
+                    <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1.5, pt: 1.5, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                      <Box><Typography variant="caption" sx={{ color: "#666", fontSize: "0.6rem", display: "block" }}>High</Typography><Typography variant="body2" sx={{ color: "#999", fontWeight: 500, fontSize: "0.75rem" }}>{formatPrice(coin.high_24h)}</Typography></Box>
+                      <Box><Typography variant="caption" sx={{ color: "#666", fontSize: "0.6rem", display: "block" }}>Low</Typography><Typography variant="body2" sx={{ color: "#999", fontWeight: 500, fontSize: "0.75rem" }}>{formatPrice(coin.low_24h)}</Typography></Box>
+                      <Box><Typography variant="caption" sx={{ color: "#666", fontSize: "0.6rem", display: "block" }}>Vol</Typography><Typography variant="body2" sx={{ color: "#999", fontWeight: 500, fontSize: "0.75rem" }}>${formatCompact(coin.total_volume)}</Typography></Box>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })}
         </Grid>
       </Container>
     </Box>
@@ -560,6 +583,10 @@ function StatsSection() {
 /* ==================== PAGE COMPONENTS ==================== */
 
 function SpotTradingPage() {
+  const { coins: cgCoins, loading } = useCoins();
+  const tickerCoins = cgCoins.slice(0, 3);
+  const tableCoins = cgCoins.slice(0, 10);
+
   return (
     <Box>
       <PageHeader
@@ -573,17 +600,17 @@ function SpotTradingPage() {
       <Box sx={{ bgcolor: "rgba(34, 197, 94, 0.03)", borderBottom: "1px solid rgba(34, 197, 94, 0.1)", py: 1.5, overflow: "hidden" }}>
         <Container maxWidth="lg">
           <Box sx={{ display: "flex", gap: 4, alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
-            {[
-              { pair: "BTC/USDT", price: "67,432.18", change: "+2.45%", up: true },
-              { pair: "ETH/USDT", price: "3,521.67", change: "+1.82%", up: true },
-              { pair: "SOL/USDT", price: "178.93", change: "+5.67%", up: true },
-            ].map((item) => (
-              <Box key={item.pair} sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)", fontWeight: 600, fontSize: "0.75rem" }}>{item.pair}</Typography>
-                <Typography variant="caption" sx={{ color: "#fff", fontWeight: 700, fontSize: "0.8rem" }}>${item.price}</Typography>
-                <Typography variant="caption" sx={{ color: item.up ? "#4ade80" : "#ef4444", fontWeight: 600, fontSize: "0.75rem" }}>{item.change}</Typography>
-              </Box>
-            ))}
+            {tickerCoins.map((coin) => {
+              const ch = coin.price_change_percentage_24h ?? 0;
+              return (
+                <Box key={coin.id} sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                  <CoinImage coin={coin} size={18} />
+                  <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)", fontWeight: 600, fontSize: "0.75rem" }}>{coin.symbol.toUpperCase()}/USDT</Typography>
+                  <Typography variant="caption" sx={{ color: "#fff", fontWeight: 700, fontSize: "0.8rem" }}>{formatPrice(coin.current_price)}</Typography>
+                  <Typography variant="caption" sx={{ color: ch >= 0 ? "#4ade80" : "#ef4444", fontWeight: 600, fontSize: "0.75rem" }}>{ch >= 0 ? "+" : ""}{ch.toFixed(2)}%</Typography>
+                </Box>
+              );
+            })}
           </Box>
         </Container>
       </Box>
@@ -691,61 +718,51 @@ function SpotTradingPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {[
-                  { pair: "BTC/USDT", price: "67,432.18", change: "+2.45%", vol: "$28.5B", spread: "0.01%", up: true },
-                  { pair: "ETH/USDT", price: "3,521.67", change: "+1.82%", vol: "$15.2B", spread: "0.01%", up: true },
-                  { pair: "SOL/USDT", price: "178.93", change: "+5.67%", vol: "$4.8B", spread: "0.02%", up: true },
-                  { pair: "BNB/USDT", price: "612.45", change: "+0.93%", vol: "$2.1B", spread: "0.02%", up: true },
-                  { pair: "XRP/USDT", price: "0.5821", change: "+0.89%", vol: "$1.2B", spread: "0.03%", up: true },
-                  { pair: "ADA/USDT", price: "0.6234", change: "-1.23%", vol: "$892M", spread: "0.04%", up: false },
-                ].map((row, _i) => (
-                  <TableRow
-                    key={row.pair}
-                    className="table-row-hover"
-                    sx={{
-                      cursor: "pointer",
-                      "& td": { py: 2, transition: "all 0.2s" },
-                      "&:hover": { bgcolor: "rgba(59, 130, 246, 0.03)" },
-                    }}
-                  >
-                    <TableCell>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                        <Box sx={{
-                          width: 32,
-                          height: 32,
-                          borderRadius: "8px",
-                          bgcolor: "rgba(255,255,255,0.05)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "0.7rem",
-                          fontWeight: 700,
-                          color: "rgba(255,255,255,0.7)",
-                        }}>
-                          {row.pair.split("/")[0].charAt(0)}
-                        </Box>
-                        <Typography sx={{ color: "#fff", fontWeight: 700, fontSize: "0.9rem" }}>{row.pair}</Typography>
-                      </Box>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={5} sx={{ textAlign: "center", py: 4, borderBottom: "none" }}>
+                      <CircularProgress size={24} sx={{ color: "#666" }} />
                     </TableCell>
-                    <TableCell sx={{ color: "#fff", fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.85rem" }}>${row.price}</TableCell>
-                    <TableCell>
-                      <Box sx={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 0.5,
-                        px: 1,
-                        py: 0.25,
-                        borderRadius: 1,
-                        bgcolor: row.up ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)",
-                      }}>
-                        {row.up ? <TrendingUpIcon sx={{ fontSize: 14, color: "#4ade80" }} /> : <TrendingDownIcon sx={{ fontSize: 14, color: "#f87171" }} />}
-                        <Typography sx={{ color: row.up ? "#4ade80" : "#f87171", fontWeight: 700, fontSize: "0.8rem" }}>{row.change}</Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell sx={{ color: "rgba(255,255,255,0.5)", fontSize: "0.85rem" }}>{row.vol}</TableCell>
-                    <TableCell sx={{ color: "rgba(255,255,255,0.4)", fontSize: "0.85rem" }}>{row.spread}</TableCell>
                   </TableRow>
-                ))}
+                ) : tableCoins.map((coin) => {
+                  const ch = coin.price_change_percentage_24h ?? 0;
+                  const isUp = ch >= 0;
+                  return (
+                    <TableRow
+                      key={coin.id}
+                      className="table-row-hover"
+                      sx={{
+                        cursor: "pointer",
+                        "& td": { py: 2, transition: "all 0.2s" },
+                        "&:hover": { bgcolor: "rgba(59, 130, 246, 0.03)" },
+                      }}
+                    >
+                      <TableCell>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                          <CoinImage coin={coin} size={32} />
+                          <Typography sx={{ color: "#fff", fontWeight: 700, fontSize: "0.9rem" }}>{coin.symbol.toUpperCase()}/USDT</Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell sx={{ color: "#fff", fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", fontSize: "0.85rem" }}>{formatPrice(coin.current_price)}</TableCell>
+                      <TableCell>
+                        <Box sx={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 0.5,
+                          px: 1,
+                          py: 0.25,
+                          borderRadius: 1,
+                          bgcolor: isUp ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)",
+                        }}>
+                          {isUp ? <TrendingUpIcon sx={{ fontSize: 14, color: "#4ade80" }} /> : <TrendingDownIcon sx={{ fontSize: 14, color: "#f87171" }} />}
+                          <Typography sx={{ color: isUp ? "#4ade80" : "#f87171", fontWeight: 700, fontSize: "0.8rem" }}>{ch >= 0 ? "+" : ""}{ch.toFixed(2)}%</Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell sx={{ color: "rgba(255,255,255,0.5)", fontSize: "0.85rem" }}>${formatCompact(coin.total_volume)}</TableCell>
+                      <TableCell sx={{ color: "rgba(255,255,255,0.4)", fontSize: "0.85rem" }}>0.01%</TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>

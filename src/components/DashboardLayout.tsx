@@ -17,8 +17,15 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import LogoutIcon from "@mui/icons-material/Logout";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import Avatar from "@mui/material/Avatar";
 import Badge from "@mui/material/Badge";
+import Popover from "@mui/material/Popover";
+import Chip from "@mui/material/Chip";
+import { notifications } from "../data";
 
 const MLogo = ({ size = 32 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
@@ -45,13 +52,92 @@ const sidebarItems = [
 const SIDEBAR_WIDTH = 240;
 const COLLAPSED_WIDTH = 68;
 
+function NotificationDropdown({ anchorEl, onClose }: { anchorEl: HTMLElement | null; onClose: () => void }) {
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  return (
+    <Popover
+      open={Boolean(anchorEl)}
+      anchorEl={anchorEl}
+      onClose={onClose}
+      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      slotProps={{
+        paper: {
+          sx: {
+            mt: 1,
+            width: 380,
+            maxHeight: 480,
+            bgcolor: "#0f1225",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "12px",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+            overflow: "hidden",
+          },
+        },
+      }}
+    >
+      <Box sx={{ px: 2.5, py: 2, borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Box>
+          <Typography variant="subtitle1" sx={{ color: "#f1f5f9", fontWeight: 700, fontSize: "0.95rem" }}>Notifications</Typography>
+          {unreadCount > 0 && (
+            <Typography variant="caption" sx={{ color: "#f59e0b", fontWeight: 500, fontSize: "0.7rem" }}>{unreadCount} unread</Typography>
+          )}
+        </Box>
+        <Chip label="Mark all read" size="small" sx={{ height: 24, fontSize: "0.65rem", fontWeight: 600, bgcolor: "rgba(99, 102, 241, 0.1)", color: "#818cf8", border: "1px solid rgba(99, 102, 241, 0.2)", cursor: "pointer", "&:hover": { bgcolor: "rgba(99, 102, 241, 0.15)" } }} />
+      </Box>
+      <Box sx={{ overflowY: "auto", maxHeight: 380 }}>
+        {notifications.map((n) => (
+          <Box
+            key={n.id}
+            sx={{
+              px: 2.5,
+              py: 1.5,
+              borderBottom: "1px solid rgba(255,255,255,0.04)",
+              cursor: "pointer",
+              transition: "background 0.2s",
+              bgcolor: !n.read ? "rgba(245, 158, 11, 0.04)" : "transparent",
+              "&:hover": { bgcolor: "rgba(255,255,255,0.03)" },
+              display: "flex",
+              gap: 1.5,
+            }}
+          >
+            <Box sx={{ mt: 0.25, flexShrink: 0 }}>
+              {n.type === "warning" && <WarningAmberIcon sx={{ fontSize: 18, color: "#f59e0b" }} />}
+              {n.type === "success" && <CheckCircleIcon sx={{ fontSize: 18, color: "#10b981" }} />}
+              {n.type === "info" && <InfoOutlinedIcon sx={{ fontSize: 18, color: "#3b82f6" }} />}
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.25 }}>
+                <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.8rem", lineHeight: 1.3 }}>{n.title}</Typography>
+                {!n.read && (
+                  <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "#f59e0b", flexShrink: 0 }} />
+                )}
+              </Box>
+              <Typography variant="caption" sx={{ color: "#64748b", fontSize: "0.72rem", lineHeight: 1.4, display: "block" }}>{n.message}</Typography>
+              <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.65rem", mt: 0.5, display: "block" }}>{n.time}</Typography>
+            </Box>
+          </Box>
+        ))}
+      </Box>
+      <Box sx={{ px: 2.5, py: 1.5, borderTop: "1px solid rgba(255,255,255,0.06)", textAlign: "center", cursor: "pointer", "&:hover": { bgcolor: "rgba(255,255,255,0.02)" } }}>
+        <Typography variant="body2" sx={{ color: "#818cf8", fontWeight: 600, fontSize: "0.8rem", display: "inline-flex", alignItems: "center", gap: 0.5 }}>
+          View all notifications <ArrowForwardIcon sx={{ fontSize: 14 }} />
+        </Typography>
+      </Box>
+    </Popover>
+  );
+}
+
 export default function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [notifAnchor, setNotifAnchor] = useState<HTMLElement | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useMediaQuery("(max-width:900px)");
   const currentWidth = isMobile ? 0 : collapsed ? COLLAPSED_WIDTH : SIDEBAR_WIDTH;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const isActive = (path: string) => {
     if (path === "/dashboard") return location.pathname === "/dashboard";
@@ -155,12 +241,12 @@ export default function DashboardLayout() {
             }}
             onClick={() => { document.cookie = "matbea_auth=; path=/; max-age=0"; navigate("/login"); }}
           >
-            <Avatar sx={{ width: 32, height: 32, bgcolor: "rgba(99, 102, 241, 0.2)", color: "#818cf8", fontSize: "0.8rem", fontWeight: 700 }}>
-              JD
+            <Avatar sx={{ width: 32, height: 32, bgcolor: "rgba(99, 102, 241, 0.2)", color: "#818cf8", fontSize: "0.75rem", fontWeight: 700 }}>
+              HH
             </Avatar>
             <Box sx={{ minWidth: 0, flex: 1 }}>
-              <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.8rem", whiteSpace: "nowrap" }}>John Doe</Typography>
-              <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.7rem", whiteSpace: "nowrap" }}>Pro Trader</Typography>
+              <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.8rem", whiteSpace: "nowrap" }}>Hamed Hazarkhani</Typography>
+              <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.7rem", whiteSpace: "nowrap" }}>Regular User</Typography>
             </Box>
             <LogoutIcon sx={{ fontSize: 16, color: "#475569" }} />
           </Box>
@@ -170,8 +256,8 @@ export default function DashboardLayout() {
             sx={{ display: "flex", justifyContent: "center" }}
             onClick={() => { document.cookie = "matbea_auth=; path=/; max-age=0"; navigate("/login"); }}
           >
-            <Avatar sx={{ width: 32, height: 32, bgcolor: "rgba(99, 102, 241, 0.2)", color: "#818cf8", fontSize: "0.8rem", fontWeight: 700, cursor: "pointer" }}>
-              JD
+            <Avatar sx={{ width: 32, height: 32, bgcolor: "rgba(99, 102, 241, 0.2)", color: "#818cf8", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer" }}>
+              HH
             </Avatar>
           </Box>
         )}
@@ -255,17 +341,63 @@ export default function DashboardLayout() {
               }}
             >
               <TrendingUpIcon sx={{ fontSize: 14, color: "#10b981" }} />
-              <Typography variant="body2" sx={{ color: "#10b981", fontWeight: 600, fontSize: "0.8rem" }}>+12.4%</Typography>
+              <Typography variant="body2" sx={{ color: "#10b981", fontWeight: 600, fontSize: "0.8rem" }}>+2.45%</Typography>
             </Box>
-            <IconButton sx={{ color: "#64748b", "&:hover": { color: "#f1f5f9" } }}>
-              <Badge badgeContent={3} color="error" sx={{ "& .MuiBadge-badge": { fontSize: "0.6rem", height: 16, minWidth: 16 } }}>
+            <IconButton
+              sx={{ color: "#64748b", "&:hover": { color: "#f1f5f9" } }}
+              onClick={(e) => setNotifAnchor(e.currentTarget)}
+            >
+              <Badge badgeContent={unreadCount} color="warning" sx={{ "& .MuiBadge-badge": { fontSize: "0.6rem", height: 16, minWidth: 16 } }}>
                 <NotificationsIcon sx={{ fontSize: 20 }} />
               </Badge>
             </IconButton>
+            <NotificationDropdown anchorEl={notifAnchor} onClose={() => setNotifAnchor(null)} />
             <IconButton sx={{ color: "#64748b", "&:hover": { color: "#f1f5f9" } }}>
               <SettingsIcon sx={{ fontSize: 20 }} />
             </IconButton>
           </Box>
+        </Box>
+
+        {/* KYC Warning Banner */}
+        <Box
+          sx={{
+            bgcolor: "rgba(245, 158, 11, 0.06)",
+            borderBottom: "1px solid rgba(245, 158, 11, 0.15)",
+            px: { xs: 2, md: 3 },
+            py: 1.25,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+            flexShrink: 0,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 0 }}>
+            <WarningAmberIcon sx={{ fontSize: 20, color: "#f59e0b", flexShrink: 0 }} />
+            <Box sx={{ minWidth: 0 }}>
+              <Typography variant="body2" sx={{ color: "#fbbf24", fontWeight: 600, fontSize: "0.82rem", lineHeight: 1.3 }}>
+                Identity verification (KYC) required
+              </Typography>
+              <Typography variant="caption" sx={{ color: "rgba(251, 191, 36, 0.6)", fontSize: "0.72rem" }}>
+                Complete KYC to resume withdrawals. Your funds are safe and accessible.
+              </Typography>
+            </Box>
+          </Box>
+          <Chip
+            label="Complete KYC"
+            size="small"
+            sx={{
+              height: 28,
+              fontSize: "0.7rem",
+              fontWeight: 700,
+              bgcolor: "rgba(245, 158, 11, 0.15)",
+              color: "#fbbf24",
+              border: "1px solid rgba(245, 158, 11, 0.3)",
+              cursor: "pointer",
+              flexShrink: 0,
+              "&:hover": { bgcolor: "rgba(245, 158, 11, 0.25)" },
+            }}
+          />
         </Box>
 
         {/* Page Content */}

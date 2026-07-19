@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
@@ -18,18 +18,24 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import { useNavigate } from "react-router-dom";
-import { coins, portfolioHistory, recentActivity } from "../data";
+import { portfolioHistory, recentActivity } from "../data";
+import { coins as staticCoins } from "../data";
+import { useCoins } from "../components/CoinGeckoProvider";
+import { formatPrice } from "../api/coingecko";
 
-function PortfolioChart() {
-  const max = Math.max(...portfolioHistory.map((d) => d.value));
-  const min = Math.min(...portfolioHistory.map((d) => d.value));
+type Period = "1W" | "1M" | "3M" | "1Y" | "ALL";
+
+function PortfolioChart({ period }: { period: Period }) {
+  const data = portfolioHistory[period];
+  const max = Math.max(...data.map((d) => d.value));
+  const min = Math.min(...data.map((d) => d.value));
   const range = max - min || 1;
   const width = 600;
   const height = 180;
   const padding = 20;
 
-  const points = portfolioHistory.map((d, i) => ({
-    x: padding + (i / (portfolioHistory.length - 1)) * (width - padding * 2),
+  const points = data.map((d, i) => ({
+    x: padding + (i / (data.length - 1)) * (width - padding * 2),
     y: padding + (1 - (d.value - min) / range) * (height - padding * 2),
   }));
 
@@ -93,10 +99,26 @@ function StatCard({ title, value, change, icon, color }: { title: string; value:
 
 export default function OverviewPage() {
   const navigate = useNavigate();
-  const totalValue = useMemo(() => coins.reduce((sum, c) => sum + c.holdings * c.price, 0), []);
-  const totalCost = useMemo(() => coins.reduce((sum, c) => sum + c.holdings * c.avgBuy, 0), []);
+  const [activePeriod, setActivePeriod] = useState<Period>("1M");
+  const { coins: cgCoins } = useCoins();
+
+  const mergedCoins = useMemo(() => {
+    return staticCoins.map((sc) => {
+      const cg = cgCoins.find((c) => c.symbol.toUpperCase() === sc.symbol);
+      return {
+        ...sc,
+        price: cg?.current_price ?? sc.price,
+        change: cg?.price_change_percentage_24h ?? sc.change,
+        image: cg?.image,
+      };
+    });
+  }, [cgCoins]);
+
+  const totalValue = useMemo(() => mergedCoins.reduce((sum, c) => sum + c.holdings * c.price, 0), [mergedCoins]);
+  const totalCost = useMemo(() => mergedCoins.reduce((sum, c) => sum + c.holdings * c.avgBuy, 0), [mergedCoins]);
   const totalPnL = totalValue - totalCost;
   const pnlPercent = ((totalPnL / totalCost) * 100).toFixed(2);
+  const availableBalance = mergedCoins[0].holdings * mergedCoins[0].price;
 
   return (
     <Box>
@@ -109,7 +131,7 @@ export default function OverviewPage() {
           <StatCard title="24h P&L" value={`$${(totalValue * 0.0245).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} change="+2.45%" icon={<TrendingUpIcon sx={{ fontSize: 20 }} />} color="#10b981" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard title="Available Balance" value="$42,850.00" icon={<SwapHorizIcon sx={{ fontSize: 20 }} />} color="#22d3ee" />
+          <StatCard title="Available Balance" value={`$${availableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} icon={<SwapHorizIcon sx={{ fontSize: 20 }} />} color="#22d3ee" />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard title="Total P&L" value={`${totalPnL >= 0 ? "+" : ""}$${totalPnL.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} change={`${totalPnL >= 0 ? "+" : ""}${pnlPercent}%`} icon={<TrendingUpIcon sx={{ fontSize: 20 }} />} color={totalPnL >= 0 ? "#10b981" : "#ef4444"} />
@@ -124,15 +146,31 @@ export default function OverviewPage() {
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                 <Typography variant="subtitle1" sx={{ color: "#f1f5f9", fontWeight: 700 }}>Portfolio Performance</Typography>
                 <Box sx={{ display: "flex", gap: 0.5 }}>
-                  {["1W", "1M", "3M", "1Y", "ALL"].map((p) => (
-                    <Chip key={p} label={p} size="small" sx={{ bgcolor: p === "1M" ? "rgba(99, 102, 241, 0.12)" : "transparent", color: p === "1M" ? "#818cf8" : "#475569", fontWeight: 600, fontSize: "0.7rem", height: 24, border: p === "1M" ? "1px solid rgba(99, 102, 241, 0.2)" : "1px solid rgba(255,255,255,0.06)", cursor: "pointer", "&:hover": { bgcolor: "rgba(99, 102, 241, 0.08)" } }} />
+                  {(["1W", "1M", "3M", "1Y", "ALL"] as Period[]).map((p) => (
+                    <Chip
+                      key={p}
+                      label={p}
+                      size="small"
+                      onClick={() => setActivePeriod(p)}
+                      sx={{
+                        bgcolor: activePeriod === p ? "rgba(99, 102, 241, 0.12)" : "transparent",
+                        color: activePeriod === p ? "#818cf8" : "#475569",
+                        fontWeight: 600,
+                        fontSize: "0.7rem",
+                        height: 24,
+                        border: activePeriod === p ? "1px solid rgba(99, 102, 241, 0.2)" : "1px solid rgba(255,255,255,0.06)",
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                        "&:hover": { bgcolor: "rgba(99, 102, 241, 0.08)" },
+                      }}
+                    />
                   ))}
                 </Box>
               </Box>
-              <PortfolioChart />
+              <PortfolioChart period={activePeriod} />
               <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-                {portfolioHistory.map((d) => (
-                  <Typography key={d.date} variant="caption" sx={{ color: "#475569", fontSize: "0.65rem" }}>{d.date}</Typography>
+                {portfolioHistory[activePeriod].map((d, i) => (
+                  <Typography key={`${d.date}-${i}`} variant="caption" sx={{ color: "#475569", fontSize: "0.65rem" }}>{d.date}</Typography>
                 ))}
               </Box>
             </CardContent>
@@ -145,14 +183,18 @@ export default function OverviewPage() {
             <CardContent sx={{ p: 2.5 }}>
               <Typography variant="subtitle1" sx={{ color: "#f1f5f9", fontWeight: 700, mb: 2 }}>Asset Allocation</Typography>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
-                {coins.slice(0, 6).map((coin) => {
+                {mergedCoins.map((coin) => {
                   const value = coin.holdings * coin.price;
                   const pct = (value / totalValue) * 100;
                   return (
                     <Box key={coin.symbol}>
                       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <Avatar sx={{ width: 22, height: 22, background: coin.gradient, fontSize: "0.55rem", fontWeight: 700 }}>{coin.symbol[0]}</Avatar>
+                          {coin.image ? (
+                            <Box component="img" src={coin.image} alt={coin.name} sx={{ width: 22, height: 22, borderRadius: "50%", objectFit: "cover" }} />
+                          ) : (
+                            <Avatar sx={{ width: 22, height: 22, background: coin.gradient, fontSize: "0.55rem", fontWeight: 700 }}>{coin.symbol[0]}</Avatar>
+                          )}
                           <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 500, fontSize: "0.8rem" }}>{coin.symbol}</Typography>
                         </Box>
                         <Typography variant="body2" sx={{ color: "#94a3b8", fontSize: "0.8rem" }}>{pct.toFixed(1)}%</Typography>
@@ -195,7 +237,7 @@ export default function OverviewPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {coins.slice(0, 5).map((coin) => {
+                  {mergedCoins.map((coin) => {
                     const value = coin.holdings * coin.price;
                     const cost = coin.holdings * coin.avgBuy;
                     const pnl = value - cost;
@@ -203,14 +245,18 @@ export default function OverviewPage() {
                       <TableRow key={coin.symbol} sx={{ cursor: "pointer", "&:hover": { bgcolor: "rgba(255,255,255,0.02)" }, "& td": { borderBottom: "1px solid rgba(255,255,255,0.03)", py: 1.5 } }}>
                         <TableCell>
                           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                            <Avatar sx={{ width: 30, height: 30, background: coin.gradient, fontSize: "0.7rem", fontWeight: 700 }}>{coin.symbol[0]}</Avatar>
+                            {coin.image ? (
+                              <Box component="img" src={coin.image} alt={coin.name} sx={{ width: 30, height: 30, borderRadius: "50%", objectFit: "cover" }} />
+                            ) : (
+                              <Avatar sx={{ width: 30, height: 30, background: coin.gradient, fontSize: "0.7rem", fontWeight: 700 }}>{coin.symbol[0]}</Avatar>
+                            )}
                             <Box>
                               <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.85rem" }}>{coin.symbol}</Typography>
                               <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.7rem" }}>{coin.name}</Typography>
                             </Box>
                           </Box>
                         </TableCell>
-                        <TableCell sx={{ color: "#f1f5f9", fontWeight: 500, fontSize: "0.85rem" }}>${coin.price.toLocaleString()}</TableCell>
+                        <TableCell sx={{ color: "#f1f5f9", fontWeight: 500, fontSize: "0.85rem" }}>{formatPrice(coin.price)}</TableCell>
                         <TableCell sx={{ color: "#94a3b8", fontSize: "0.85rem" }}>{coin.holdings.toLocaleString()} {coin.symbol}</TableCell>
                         <TableCell sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.85rem" }}>${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                         <TableCell>
@@ -221,7 +267,7 @@ export default function OverviewPage() {
                         <TableCell>
                           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                             {coin.change >= 0 ? <TrendingUpIcon sx={{ fontSize: 14, color: "#10b981" }} /> : <TrendingDownIcon sx={{ fontSize: 14, color: "#ef4444" }} />}
-                            <Typography sx={{ color: coin.change >= 0 ? "#10b981" : "#ef4444", fontWeight: 600, fontSize: "0.8rem" }}>{coin.change >= 0 ? "+" : ""}{coin.change}%</Typography>
+                            <Typography sx={{ color: coin.change >= 0 ? "#10b981" : "#ef4444", fontWeight: 600, fontSize: "0.8rem" }}>{coin.change >= 0 ? "+" : ""}{typeof coin.change === "number" ? coin.change.toFixed(2) : coin.change}%</Typography>
                           </Box>
                         </TableCell>
                       </TableRow>

@@ -1,20 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-
-const tickerData = [
-  { symbol: "BTC/USDT", price: "67,432.18", change: "+2.45%" },
-  { symbol: "ETH/USDT", price: "3,521.67", change: "+1.82%" },
-  { symbol: "SOL/USDT", price: "178.93", change: "+5.67%" },
-  { symbol: "BNB/USDT", price: "612.45", change: "+0.93%" },
-  { symbol: "XRP/USDT", price: "0.5821", change: "+0.89%" },
-  { symbol: "ADA/USDT", price: "0.6234", change: "-1.23%" },
-  { symbol: "DOGE/USDT", price: "0.1523", change: "+8.45%" },
-  { symbol: "DOT/USDT", price: "8.4521", change: "+3.21%" },
-  { symbol: "AVAX/USDT", price: "42.87", change: "-0.54%" },
-  { symbol: "LINK/USDT", price: "18.92", change: "+4.12%" },
-  { symbol: "MATIC/USDT", price: "0.7123", change: "+1.56%" },
-  { symbol: "UNI/USDT", price: "12.34", change: "+2.78%" },
-];
+import { useCoins } from "./CoinGeckoProvider";
+import { formatPrice } from "../api/coingecko";
 
 const tickerItemSx = {
   display: "inline-flex",
@@ -25,7 +12,10 @@ const tickerItemSx = {
 };
 
 export default function TickerTape() {
-  const items = [...tickerData, ...tickerData];
+  const { coins } = useCoins();
+  const items = coins.length > 0 ? coins : [];
+  const doubled = [...items, ...items];
+
   return (
     <Box sx={{ bgcolor: "#000", borderBottom: "1px solid rgba(255,255,255,0.08)", py: 0.75 }}>
       <Box
@@ -43,13 +33,20 @@ export default function TickerTape() {
             animation: "ticker-scroll 40s linear infinite",
           }}
         >
-          {items.map((t, i) => {
-            const isUp = t.change.startsWith("+");
+          {doubled.map((t, i) => {
+            const ch = t.price_change_percentage_24h ?? 0;
+            const isUp = ch >= 0;
             return (
-              <Box key={i} sx={tickerItemSx}>
-                <Typography variant="body2" sx={{ color: "#666", fontWeight: 500, fontSize: "0.78rem" }}>{t.symbol}</Typography>
-                <Typography variant="body2" sx={{ color: "#fff", fontWeight: 600, fontSize: "0.78rem" }}>${t.price}</Typography>
-                <Typography variant="body2" sx={{ color: isUp ? "#22c55e" : "#ef4444", fontWeight: 600, fontSize: "0.75rem" }}>{t.change}</Typography>
+              <Box key={`${t.id}-${i}`} sx={tickerItemSx}>
+                <Box
+                  component="img"
+                  src={t.image}
+                  alt={t.name}
+                  sx={{ width: 16, height: 16, borderRadius: "50%", objectFit: "cover" }}
+                />
+                <Typography variant="body2" sx={{ color: "#666", fontWeight: 500, fontSize: "0.78rem" }}>{t.symbol.toUpperCase()}/USDT</Typography>
+                <Typography variant="body2" sx={{ color: "#fff", fontWeight: 600, fontSize: "0.78rem" }}>{formatPrice(t.current_price)}</Typography>
+                <Typography variant="body2" sx={{ color: isUp ? "#22c55e" : "#ef4444", fontWeight: 600, fontSize: "0.75rem" }}>{ch >= 0 ? "+" : ""}{ch.toFixed(2)}%</Typography>
               </Box>
             );
           })}

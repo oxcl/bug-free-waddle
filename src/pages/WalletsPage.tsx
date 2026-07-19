@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
@@ -28,13 +28,28 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
-import { coins } from "../data";
+import { coins as staticCoins } from "../data";
+import { useCoins } from "../components/CoinGeckoProvider";
+import { formatPrice } from "../api/coingecko";
 
 export default function WalletsPage() {
   const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState("BTC");
   const [tabValue, setTabValue] = useState(0);
+  const { coins: cgCoins } = useCoins();
+
+  const coins = useMemo(() => {
+    return staticCoins.map((sc) => {
+      const cg = cgCoins.find((c) => c.symbol.toUpperCase() === sc.symbol);
+      return {
+        ...sc,
+        price: cg?.current_price ?? sc.price,
+        change: cg?.price_change_percentage_24h ?? sc.change,
+        image: cg?.image,
+      };
+    });
+  }, [cgCoins]);
 
   const totalBalance = coins.reduce((sum, c) => sum + c.holdings * c.price, 0);
   const totalCost = coins.reduce((sum, c) => sum + c.holdings * c.avgBuy, 0);
@@ -126,14 +141,18 @@ export default function WalletsPage() {
                   <TableRow key={coin.symbol} sx={{ cursor: "pointer", "&:hover": { bgcolor: "rgba(255,255,255,0.02)" }, "& td": { borderBottom: "1px solid rgba(255,255,255,0.03)", py: 1.8 } }}>
                     <TableCell>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                        <Avatar sx={{ width: 34, height: 34, background: coin.gradient, fontSize: "0.75rem", fontWeight: 700 }}>{coin.symbol[0]}</Avatar>
+                        {coin.image ? (
+                          <Box component="img" src={coin.image} alt={coin.name} sx={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover" }} />
+                        ) : (
+                          <Avatar sx={{ width: 34, height: 34, background: coin.gradient, fontSize: "0.75rem", fontWeight: 700 }}>{coin.symbol[0]}</Avatar>
+                        )}
                         <Box>
                           <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.85rem" }}>{coin.symbol}</Typography>
                           <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.7rem" }}>{coin.name}</Typography>
                         </Box>
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ color: "#f1f5f9", fontWeight: 500, fontSize: "0.85rem" }}>${coin.price.toLocaleString()}</TableCell>
+                    <TableCell sx={{ color: "#f1f5f9", fontWeight: 500, fontSize: "0.85rem" }}>{formatPrice(coin.price)}</TableCell>
                     <TableCell sx={{ color: "#94a3b8", fontSize: "0.85rem" }}>{coin.holdings.toLocaleString()} {coin.symbol}</TableCell>
                     <TableCell sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.85rem" }}>${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                     <TableCell sx={{ color: "#94a3b8", fontSize: "0.85rem" }}>${coin.avgBuy.toLocaleString()}</TableCell>
@@ -148,7 +167,7 @@ export default function WalletsPage() {
                     <TableCell>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                         {coin.change >= 0 ? <TrendingUpIcon sx={{ fontSize: 14, color: "#10b981" }} /> : <TrendingDownIcon sx={{ fontSize: 14, color: "#ef4444" }} />}
-                        <Typography sx={{ color: coin.change >= 0 ? "#10b981" : "#ef4444", fontWeight: 600, fontSize: "0.8rem" }}>{coin.change >= 0 ? "+" : ""}{coin.change}%</Typography>
+                        <Typography sx={{ color: coin.change >= 0 ? "#10b981" : "#ef4444", fontWeight: 600, fontSize: "0.8rem" }}>{coin.change >= 0 ? "+" : ""}{typeof coin.change === "number" ? coin.change.toFixed(2) : coin.change}%</Typography>
                       </Box>
                     </TableCell>
                     <TableCell>

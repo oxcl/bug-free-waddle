@@ -13,9 +13,12 @@ import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import CircularProgress from "@mui/material/CircularProgress";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
-import { orderBook, coins } from "../data";
+import { orderBook } from "../data";
+import { useCoins } from "../components/CoinGeckoProvider";
+import { formatPrice, formatCompact } from "../api/coingecko";
 
 function OrderBookPanel() {
   const maxTotal = Math.max(...orderBook.asks.map((o) => o.amount), ...orderBook.bids.map((o) => o.amount));
@@ -171,8 +174,10 @@ function TradeForm() {
 }
 
 function PriceChartArea() {
+  const { coins: cgCoins, loading } = useCoins();
   const [selectedPair, setSelectedPair] = useState("BTC/USDT");
-  const coin = coins.find((c) => `${c.symbol}/USDT` === selectedPair) || coins[0];
+  const selectedSymbol = selectedPair.split("/")[0];
+  const coin = cgCoins.find((c) => c.symbol.toUpperCase() === selectedSymbol) || cgCoins[0];
 
   return (
     <Card elevation={0}>
@@ -185,24 +190,26 @@ function PriceChartArea() {
                 onChange={(e) => setSelectedPair(e.target.value)}
                 sx={{ color: "#f1f5f9", fontSize: "0.85rem", fontWeight: 600, "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.08)" }, "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(99, 102, 241, 0.3)" } }}
               >
-                {coins.map((c) => (
-                  <MenuItem key={c.symbol} value={`${c.symbol}/USDT`}>{c.symbol}/USDT</MenuItem>
+                {cgCoins.filter((c) => !["usdt","usdc"].includes(c.symbol.toLowerCase())).slice(0, 10).map((c) => (
+                  <MenuItem key={c.id} value={`${c.symbol.toUpperCase()}/USDT`}>{c.symbol.toUpperCase()}/USDT</MenuItem>
                 ))}
               </Select>
             </FormControl>
-            <Typography variant="h5" sx={{ color: "#f1f5f9", fontWeight: 700 }}>${coin.price.toLocaleString()}</Typography>
-            <Chip
-              icon={coin.change >= 0 ? <TrendingUpIcon sx={{ fontSize: "12px !important" }} /> : <TrendingDownIcon sx={{ fontSize: "12px !important" }} />}
-              label={`${coin.change >= 0 ? "+" : ""}${coin.change}%`}
-              size="small"
-              sx={{
-                bgcolor: coin.change >= 0 ? "rgba(16, 185, 129, 0.08)" : "rgba(239, 68, 68, 0.08)",
-                color: coin.change >= 0 ? "#10b981" : "#ef4444",
-                fontWeight: 600,
-                fontSize: "0.7rem",
-                "& .MuiChip-icon": { color: coin.change >= 0 ? "#10b981 !important" : "#ef4444 !important" },
-              }}
-            />
+            {loading ? <CircularProgress size={20} /> : <Typography variant="h5" sx={{ color: "#f1f5f9", fontWeight: 700 }}>{coin ? formatPrice(coin.current_price) : "--"}</Typography>}
+            {coin && (
+              <Chip
+                icon={(coin.price_change_percentage_24h ?? 0) >= 0 ? <TrendingUpIcon sx={{ fontSize: "12px !important" }} /> : <TrendingDownIcon sx={{ fontSize: "12px !important" }} />}
+                label={`${(coin.price_change_percentage_24h ?? 0) >= 0 ? "+" : ""}${(coin.price_change_percentage_24h ?? 0).toFixed(2)}%`}
+                size="small"
+                sx={{
+                  bgcolor: (coin.price_change_percentage_24h ?? 0) >= 0 ? "rgba(16, 185, 129, 0.08)" : "rgba(239, 68, 68, 0.08)",
+                  color: (coin.price_change_percentage_24h ?? 0) >= 0 ? "#10b981" : "#ef4444",
+                  fontWeight: 600,
+                  fontSize: "0.7rem",
+                  "& .MuiChip-icon": { color: (coin.price_change_percentage_24h ?? 0) >= 0 ? "#10b981 !important" : "#ef4444 !important" },
+                }}
+              />
+            )}
           </Box>
           <Box sx={{ display: "flex", gap: 0.5 }}>
             {["1H", "4H", "1D", "1W", "1M"].map((t) => (
@@ -248,11 +255,11 @@ function PriceChartArea() {
 
         {/* Market Stats */}
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          {[
-            { label: "24h High", value: `$${(coin.price * 1.02).toLocaleString(undefined, { maximumFractionDigits: 2 })}` },
-            { label: "24h Low", value: `$${(coin.price * 0.97).toLocaleString(undefined, { maximumFractionDigits: 2 })}` },
-            { label: "24h Volume", value: `$${coin.volume}` },
-            { label: "Market Cap", value: `$${coin.marketCap}` },
+          {coin && [
+            { label: "24h High", value: formatPrice(coin.high_24h) },
+            { label: "24h Low", value: formatPrice(coin.low_24h) },
+            { label: "24h Volume", value: `$${formatCompact(coin.total_volume)}` },
+            { label: "Market Cap", value: `$${formatCompact(coin.market_cap)}` },
           ].map((stat) => (
             <Grid size={{ xs: 6, sm: 3 }} key={stat.label}>
               <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.65rem", textTransform: "uppercase" }}>{stat.label}</Typography>
