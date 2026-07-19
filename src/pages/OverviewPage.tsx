@@ -337,8 +337,8 @@ export default function OverviewPage() {
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
                 {recentActivity.map((activity, i) => (
                   <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1.5, p: 1.5, borderRadius: "8px", bgcolor: "rgba(255,255,255,0.02)", "&:hover": { bgcolor: "rgba(255,255,255,0.04)" } }}>
-                    <Box sx={{ width: 32, height: 32, borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", bgcolor: activity.type === "trade" ? "rgba(255, 255, 255, 0.06)" : activity.type === "deposit" ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)" }}>
-                      {activity.type === "trade" ? <SwapHorizIcon sx={{ fontSize: 16, color: "#ffffff" }} /> : activity.type === "deposit" ? <ArrowDownwardIcon sx={{ fontSize: 16, color: "#22c55e" }} /> : <ArrowUpwardIcon sx={{ fontSize: 16, color: "#ef4444" }} />}
+                    <Box sx={{ width: 32, height: 32, borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", bgcolor: activity.type === "deposit" ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)" }}>
+                      {activity.type === "deposit" ? <ArrowDownwardIcon sx={{ fontSize: 16, color: "#22c55e" }} /> : <ArrowUpwardIcon sx={{ fontSize: 16, color: "#ef4444" }} />}
                     </Box>
                     <Box sx={{ flex: 1, minWidth: 0 }}>
                       <Typography variant="body2" sx={{ color: "#ffffff", fontWeight: 500, fontSize: "0.8rem" }}>{activity.action}</Typography>

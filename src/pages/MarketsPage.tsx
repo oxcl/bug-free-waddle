@@ -18,6 +18,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
 import { coins } from "../data";
+import { useKyc } from "../components/KycContext";
 
 function MiniChart({ up }: { up: boolean }) {
   const points = up
@@ -35,6 +36,7 @@ export default function MarketsPage() {
   const [search, setSearch] = useState("");
   const [favorites, setFavorites] = useState<Set<string>>(new Set(["BTC", "ETH", "SOL"]));
   const [sortBy, setSortBy] = useState<string>("marketCap");
+  const { openKyc } = useKyc();
 
   const filteredCoins = useMemo(() => {
     let result = coins.filter(
@@ -159,6 +161,7 @@ export default function MarketsPage() {
                     <Chip
                       label="Trade"
                       size="small"
+                      onClick={openKyc}
                       sx={{
                         bgcolor: "rgba(255, 255, 255, 0.06)",
                         color: "#ffffff",

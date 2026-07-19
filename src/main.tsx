@@ -12,7 +12,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <BrowserRouter basename="/bug-free-waddle">
+        <BrowserRouter basename="/">
         <CoinGeckoProvider>
           <App />
         </CoinGeckoProvider>

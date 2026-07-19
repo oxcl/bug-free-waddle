@@ -100,9 +100,35 @@ export const orderBook = {
   ],
 };
 
-export const openOrders = [];
+export interface OpenOrder {
+  id: string;
+  date: string;
+  pair: string;
+  type: string;
+  side: string;
+  price: number;
+  amount: number;
+  filled: number;
+  total: number;
+  status: string;
+}
 
-export const orderHistory = [];
+export interface OrderHistoryEntry {
+  id: string;
+  date: string;
+  pair: string;
+  type: string;
+  side: string;
+  price: number;
+  amount: number;
+  total: number;
+  fee: number;
+  status: string;
+}
+
+export const openOrders: OpenOrder[] = [];
+
+export const orderHistory: OrderHistoryEntry[] = [];
 
 export const transactions = [
   { id: "TXN-4521", type: "Deposit", asset: "USDT", amount: 1100.00, status: "Completed", date: "2026-07-14 09:15", txHash: "0x8f3a...c4e2" },

@@ -165,16 +165,18 @@ export default function LoginPage() {
                 },
               }}
               MenuProps={{
-                PaperProps: {
-                  sx: {
-                    bgcolor: "#111",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    maxHeight: 300,
-                    "& .MuiMenuItem-root": {
-                      color: "#e2e8f0",
-                      fontSize: "0.9rem",
-                      "&:hover": { bgcolor: "rgba(99, 102, 241, 0.1)" },
-                      "&.Mui-selected": { bgcolor: "rgba(99, 102, 241, 0.15)" },
+                slotProps: {
+                  paper: {
+                    sx: {
+                      bgcolor: "#111",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      maxHeight: 300,
+                      "& .MuiMenuItem-root": {
+                        color: "#e2e8f0",
+                        fontSize: "0.9rem",
+                        "&:hover": { bgcolor: "rgba(99, 102, 241, 0.1)" },
+                        "&.Mui-selected": { bgcolor: "rgba(99, 102, 241, 0.15)" },
+                      },
                     },
                   },
                 },

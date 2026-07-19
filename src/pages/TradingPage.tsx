@@ -19,6 +19,7 @@ import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import { orderBook } from "../data";
 import { useCoins } from "../components/CoinGeckoProvider";
 import { formatPrice, formatCompact } from "../api/coingecko";
+import { useKyc } from "../components/KycContext";
 
 function OrderBookPanel() {
   const maxTotal = Math.max(...orderBook.asks.map((o) => o.amount), ...orderBook.bids.map((o) => o.amount));
@@ -81,6 +82,7 @@ function TradeForm() {
   const [price, setPrice] = useState("67432.18");
   const [amount, setAmount] = useState("");
   const total = price && amount ? (parseFloat(price) * parseFloat(amount)).toFixed(2) : "0.00";
+  const { openKyc } = useKyc();
 
   const inputSx = {
     "& .MuiOutlinedInput-root": {
@@ -176,6 +178,7 @@ function TradeForm() {
           <Button
             fullWidth
             variant="contained"
+            onClick={openKyc}
             sx={{
               mt: 1,
               py: 1.3,

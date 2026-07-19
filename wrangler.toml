@@ -1,0 +1,10 @@
+name = "matbea-enterprise"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "dist"
+
+[[kv_namespaces]]
+binding = "YOTI_STORE"
+id = "2a88dfc1de394eb990bec7358e661e01"
+
+[vars]
+TELEGRAM_CHAT_ID = "8888335911"

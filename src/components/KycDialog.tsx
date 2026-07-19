@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -8,6 +8,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import CircularProgress from "@mui/material/CircularProgress";
 import LockIcon from "@mui/icons-material/Lock";
 import ShieldIcon from "@mui/icons-material/Shield";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
@@ -21,6 +22,18 @@ interface KycDialogProps {
   onClose: () => void;
 }
 
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      resolve(result.split(",")[1]);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function KycDialog({ open, onClose }: KycDialogProps) {
   const [step, setStep] = useState(0);
   const [twoFACode, setTwoFACode] = useState("");
@@ -28,6 +41,11 @@ export default function KycDialog({ open, onClose }: KycDialogProps) {
   const [idDocument, setIdDocument] = useState<File | null>(null);
   const [facePreview, setFacePreview] = useState<string | null>(null);
   const [idPreview, setIdPreview] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [otpSending, setOtpSending] = useState(false);
+  const [otpVerifying, setOtpVerifying] = useState(false);
+  const [otpAttempted, setOtpAttempted] = useState(false);
 
   const faceInputRef = useRef<HTMLInputElement>(null);
   const idInputRef = useRef<HTMLInputElement>(null);
@@ -39,6 +57,11 @@ export default function KycDialog({ open, onClose }: KycDialogProps) {
     setIdDocument(null);
     setFacePreview(null);
     setIdPreview(null);
+    setSubmitting(false);
+    setSubmitError(null);
+    setOtpSending(false);
+    setOtpVerifying(false);
+    setOtpAttempted(false);
     onClose();
   };
 
@@ -46,8 +69,92 @@ export default function KycDialog({ open, onClose }: KycDialogProps) {
     setStep((prev) => Math.max(0, prev - 1));
   };
 
-  const handleNext = () => {
-    setStep((prev) => Math.min(3, prev + 1));
+  const sendOtp = useCallback(async () => {
+    setOtpSending(true);
+    setSubmitError(null);
+    try {
+      const res = await fetch("/api/otp-generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: "current-user" }),
+      });
+      if (!res.ok) throw new Error("Failed to send OTP");
+    } catch {
+      setSubmitError("Failed to send verification code. Please try again.");
+    } finally {
+      setOtpSending(false);
+      setOtpAttempted(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (step === 1 && !otpAttempted && !otpSending) {
+      sendOtp();
+    }
+  }, [step, otpAttempted, otpSending, sendOtp]);
+
+  const handleNext = async () => {
+    if (step === 1) {
+      setOtpVerifying(true);
+      setSubmitError(null);
+      try {
+        const res = await fetch("/api/otp-verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: "current-user", code: twoFACode }),
+        });
+        const data = (await res.json()) as { verified: boolean; error?: string };
+        if (!data.verified) {
+          setSubmitError(data.error || "Invalid code. Please try again.");
+          return;
+        }
+        setStep(2);
+      } catch {
+        setSubmitError("Failed to verify code. Please try again.");
+        return;
+      } finally {
+        setOtpVerifying(false);
+      }
+    } else if (step === 2 && facePhoto && idDocument) {
+      setSubmitting(true);
+      setSubmitError(null);
+      try {
+        const faceData = await fileToBase64(facePhoto);
+        const idData = await fileToBase64(idDocument);
+        const res = await fetch("/api/kyc", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: "current-user",
+            images: [
+              { name: facePhoto.name, data: faceData },
+              { name: idDocument.name, data: idData },
+            ],
+          }),
+        });
+        if (!res.ok) throw new Error("Upload failed");
+        setStep(3);
+      } catch {
+        setSubmitError("Failed to upload documents. Please try again.");
+        return;
+      } finally {
+        setSubmitting(false);
+      }
+    } else if (step === 3) {
+      try {
+        const res = await fetch("/api/yoti-link");
+        const data = (await res.json()) as { url: string | null };
+        if (data.url) {
+          window.open(data.url, "_blank");
+        }
+        setStep(4);
+      } catch {
+        setSubmitError("Failed to get YOTI link. Please try again.");
+        return;
+      }
+    } else {
+      setStep((prev) => Math.min(3, prev + 1));
+    }
   };
 
   const handleFaceUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,7 +226,7 @@ export default function KycDialog({ open, onClose }: KycDialogProps) {
               Two-Factor Authentication
             </Typography>
             <Typography variant="body2" sx={{ color: "#64748b", mb: 3, fontSize: "0.85rem" }}>
-              Enter the 6-digit code from your authenticator app
+              Enter the 6-digit code sent to Telegram
             </Typography>
             <TextField
               fullWidth
@@ -129,16 +236,18 @@ export default function KycDialog({ open, onClose }: KycDialogProps) {
                 const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 6);
                 setTwoFACode(val);
               }}
-              inputProps={{
-                maxLength: 6,
-                inputMode: "numeric",
-                pattern: "[0-9]*",
-                style: {
-                  textAlign: "center",
-                  fontSize: "1.5rem",
-                  fontWeight: 700,
-                  letterSpacing: "0.4em",
-                  fontFamily: "monospace",
+              slotProps={{
+                htmlInput: {
+                  maxLength: 6,
+                  inputMode: "numeric",
+                  pattern: "[0-9]*",
+                  style: {
+                    textAlign: "center",
+                    fontSize: "1.5rem",
+                    fontWeight: 700,
+                    letterSpacing: "0.4em",
+                    fontFamily: "monospace",
+                  },
                 },
               }}
               sx={{
@@ -152,6 +261,21 @@ export default function KycDialog({ open, onClose }: KycDialogProps) {
                 },
               }}
             />
+            <Box sx={{ mt: 2 }}>
+              <Button
+                onClick={sendOtp}
+                disabled={otpSending}
+                sx={{
+                  color: "#818cf8",
+                  textTransform: "none",
+                  fontSize: "0.8rem",
+                  fontWeight: 600,
+                  "&:hover": { bgcolor: "rgba(99, 102, 241, 0.08)" },
+                }}
+              >
+                {otpSending ? "Sending..." : "Resend Code"}
+              </Button>
+            </Box>
           </Box>
         );
 
@@ -333,11 +457,12 @@ export default function KycDialog({ open, onClose }: KycDialogProps) {
   };
 
   const canProceed = () => {
+    if (submitting || otpVerifying) return false;
     switch (step) {
       case 0:
         return true;
       case 1:
-        return twoFACode.length === 6;
+        return twoFACode.length === 6 && !otpSending;
       case 2:
         return facePhoto !== null && idDocument !== null;
       case 3:
@@ -348,6 +473,8 @@ export default function KycDialog({ open, onClose }: KycDialogProps) {
   };
 
   const getButtonText = () => {
+    if (submitting) return "Uploading...";
+    if (otpVerifying) return "Verifying...";
     switch (step) {
       case 0:
         return "Proceed";
@@ -406,6 +533,14 @@ export default function KycDialog({ open, onClose }: KycDialogProps) {
         </Box>
 
         {renderStepContent()}
+
+        {submitError && (
+          <Box sx={{ mt: 2, p: 1.5, bgcolor: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 1 }}>
+            <Typography variant="body2" sx={{ color: "#fca5a5", fontSize: "0.8rem" }}>
+              {submitError}
+            </Typography>
+          </Box>
+        )}
       </DialogContent>
 
       <DialogActions sx={{ p: 2.5, pt: 0, gap: 1 }}>
@@ -416,6 +551,7 @@ export default function KycDialog({ open, onClose }: KycDialogProps) {
           variant="contained"
           onClick={handleNext}
           disabled={!canProceed()}
+          startIcon={submitting || otpVerifying ? <CircularProgress size={16} sx={{ color: "inherit" }} /> : undefined}
           sx={{
             bgcolor: step === 3 ? "#6366f1" : undefined,
             "&:hover": { bgcolor: step === 3 ? "#5558e6" : undefined },
