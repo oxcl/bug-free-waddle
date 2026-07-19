@@ -25,6 +25,7 @@ import Avatar from "@mui/material/Avatar";
 import Badge from "@mui/material/Badge";
 import Popover from "@mui/material/Popover";
 import Chip from "@mui/material/Chip";
+import KycDialog from "./KycDialog";
 import { notifications } from "../data";
 
 const MLogo = ({ size = 32 }: { size?: number }) => (
@@ -133,6 +134,7 @@ export default function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [notifAnchor, setNotifAnchor] = useState<HTMLElement | null>(null);
+  const [kycOpen, setKycOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useMediaQuery("(max-width:900px)");
@@ -386,6 +388,7 @@ export default function DashboardLayout() {
           <Chip
             label="Complete KYC"
             size="small"
+            onClick={() => setKycOpen(true)}
             sx={{
               height: 28,
               fontSize: "0.7rem",
@@ -405,6 +408,8 @@ export default function DashboardLayout() {
           <Outlet />
         </Box>
       </Box>
+
+      <KycDialog open={kycOpen} onClose={() => setKycOpen(false)} />
     </Box>
   );
 }
