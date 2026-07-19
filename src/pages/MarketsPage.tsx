@@ -23,7 +23,7 @@ function MiniChart({ up }: { up: boolean }) {
   const points = up
     ? "0,30 8,25 16,28 24,18 32,22 40,12 48,16 56,8 64,12 72,5 80,8"
     : "0,8 8,12 16,10 24,20 32,16 40,25 48,22 56,28 64,24 72,28 80,30";
-  const color = up ? "#10b981" : "#ef4444";
+  const color = up ? "#22c55e" : "#ef4444";
   return (
     <svg width="100%" height="30" viewBox="0 0 80 30" style={{ display: "block" }}>
       <polyline points={points} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -68,14 +68,15 @@ export default function MarketsPage() {
             flex: 1,
             minWidth: 200,
             "& .MuiOutlinedInput-root": {
-              color: "#f1f5f9",
+              color: "#ffffff",
               fontSize: "0.85rem",
+              background: "rgba(255, 255, 255, 0.03)",
               "& fieldset": { borderColor: "rgba(255,255,255,0.08)" },
-              "&:hover fieldset": { borderColor: "rgba(99, 102, 241, 0.3)" },
-              "&.Mui-focused fieldset": { borderColor: "#6366f1" },
+              "&:hover fieldset": { borderColor: "rgba(255, 255, 255, 0.15)" },
+              "&.Mui-focused fieldset": { borderColor: "rgba(255, 255, 255, 0.3)" },
             },
           }}
-          slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: "#475569", fontSize: 20 }} /></InputAdornment> } }}
+          slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: "#666666", fontSize: 20 }} /></InputAdornment> } }}
         />
         <Box sx={{ display: "flex", gap: 0.5 }}>
           {[
@@ -89,11 +90,11 @@ export default function MarketsPage() {
               size="small"
               onClick={() => setSortBy(s.key)}
               sx={{
-                bgcolor: sortBy === s.key ? "rgba(99, 102, 241, 0.12)" : "transparent",
-                color: sortBy === s.key ? "#818cf8" : "#475569",
+                bgcolor: sortBy === s.key ? "rgba(255, 255, 255, 0.08)" : "transparent",
+                color: sortBy === s.key ? "#ffffff" : "#666666",
                 fontWeight: 600,
                 fontSize: "0.75rem",
-                border: sortBy === s.key ? "1px solid rgba(99, 102, 241, 0.2)" : "1px solid rgba(255,255,255,0.06)",
+                border: sortBy === s.key ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(255,255,255,0.06)",
                 cursor: "pointer",
               }}
             />
@@ -102,13 +103,21 @@ export default function MarketsPage() {
       </Box>
 
       {/* Market Table */}
-      <Card elevation={0}>
+      <Card
+        elevation={0}
+        sx={{
+          background: "rgba(255, 255, 255, 0.03)",
+          backdropFilter: "blur(20px)",
+          border: "1px solid rgba(255, 255, 255, 0.06)",
+          borderRadius: "16px",
+        }}
+      >
         <CardContent sx={{ p: 0 }}>
           <Table>
             <TableHead>
               <TableRow>
                 {["", "#", "Asset", "Price", "24h Change", "7d Chart", "Volume", "Market Cap", "Action"].map((h) => (
-                  <TableCell key={h} sx={{ color: "#475569", fontWeight: 600, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", borderBottom: "1px solid rgba(255,255,255,0.04)", py: 1.5 }}>
+                  <TableCell key={h} sx={{ color: "#666666", fontWeight: 600, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", borderBottom: "1px solid rgba(255,255,255,0.05)", py: 1.5 }}>
                     {h}
                   </TableCell>
                 ))}
@@ -116,49 +125,49 @@ export default function MarketsPage() {
             </TableHead>
             <TableBody>
               {filteredCoins.map((coin, i) => (
-                <TableRow key={coin.symbol} sx={{ cursor: "pointer", "&:hover": { bgcolor: "rgba(255,255,255,0.02)" }, "& td": { borderBottom: "1px solid rgba(255,255,255,0.03)", py: 2 } }}>
+                <TableRow key={coin.symbol} sx={{ cursor: "pointer", "&:hover": { bgcolor: "rgba(255,255,255,0.03)" }, "& td": { borderBottom: "1px solid rgba(255,255,255,0.03)", py: 2 } }}>
                   <TableCell sx={{ width: 40 }}>
-                    <Box onClick={(e) => { e.stopPropagation(); toggleFavorite(coin.symbol); }} sx={{ cursor: "pointer", color: favorites.has(coin.symbol) ? "#f59e0b" : "#475569" }}>
+                    <Box onClick={(e) => { e.stopPropagation(); toggleFavorite(coin.symbol); }} sx={{ cursor: "pointer", color: favorites.has(coin.symbol) ? "#f59e0b" : "#666666" }}>
                       {favorites.has(coin.symbol) ? <StarIcon sx={{ fontSize: 18 }} /> : <StarBorderIcon sx={{ fontSize: 18 }} />}
                     </Box>
                   </TableCell>
-                  <TableCell sx={{ color: "#475569", fontWeight: 500, fontSize: "0.85rem" }}>{i + 1}</TableCell>
+                  <TableCell sx={{ color: "#666666", fontWeight: 500, fontSize: "0.85rem" }}>{i + 1}</TableCell>
                   <TableCell>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                       <Avatar sx={{ width: 36, height: 36, background: coin.gradient, fontWeight: 700, fontSize: "0.8rem", color: "#fff" }}>
                         {coin.symbol.charAt(0)}
                       </Avatar>
                       <Box>
-                        <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.85rem" }}>{coin.name}</Typography>
-                        <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.7rem" }}>{coin.symbol}</Typography>
+                        <Typography variant="body2" sx={{ color: "#ffffff", fontWeight: 600, fontSize: "0.85rem" }}>{coin.name}</Typography>
+                        <Typography variant="caption" sx={{ color: "#666666", fontSize: "0.7rem" }}>{coin.symbol}</Typography>
                       </Box>
                     </Box>
                   </TableCell>
-                  <TableCell sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.9rem" }}>${coin.price.toLocaleString()}</TableCell>
+                  <TableCell sx={{ color: "#ffffff", fontWeight: 600, fontSize: "0.9rem" }}>${coin.price.toLocaleString()}</TableCell>
                   <TableCell>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                      {coin.change >= 0 ? <TrendingUpIcon sx={{ fontSize: 16, color: "#10b981" }} /> : <TrendingDownIcon sx={{ fontSize: 16, color: "#ef4444" }} />}
-                      <Typography sx={{ color: coin.change >= 0 ? "#10b981" : "#ef4444", fontWeight: 600, fontSize: "0.85rem" }}>{coin.change >= 0 ? "+" : ""}{coin.change}%</Typography>
+                      {coin.change >= 0 ? <TrendingUpIcon sx={{ fontSize: 16, color: "#22c55e" }} /> : <TrendingDownIcon sx={{ fontSize: 16, color: "#ef4444" }} />}
+                      <Typography sx={{ color: coin.change >= 0 ? "#22c55e" : "#ef4444", fontWeight: 600, fontSize: "0.85rem" }}>{coin.change >= 0 ? "+" : ""}{coin.change}%</Typography>
                     </Box>
                   </TableCell>
                   <TableCell sx={{ width: 120 }}>
                     <MiniChart up={coin.change >= 0} />
                   </TableCell>
-                  <TableCell sx={{ color: "#94a3b8", fontSize: "0.85rem" }}>${coin.volume}</TableCell>
-                  <TableCell sx={{ color: "#94a3b8", fontSize: "0.85rem" }}>${coin.marketCap}</TableCell>
+                  <TableCell sx={{ color: "#cccccc", fontSize: "0.85rem" }}>${coin.volume}</TableCell>
+                  <TableCell sx={{ color: "#cccccc", fontSize: "0.85rem" }}>${coin.marketCap}</TableCell>
                   <TableCell>
                     <Chip
                       label="Trade"
                       size="small"
                       sx={{
-                        bgcolor: "rgba(99, 102, 241, 0.1)",
-                        color: "#818cf8",
+                        bgcolor: "rgba(255, 255, 255, 0.06)",
+                        color: "#ffffff",
                         fontWeight: 600,
                         fontSize: "0.7rem",
                         height: 26,
                         cursor: "pointer",
-                        border: "1px solid rgba(99, 102, 241, 0.15)",
-                        "&:hover": { bgcolor: "rgba(99, 102, 241, 0.2)" },
+                        border: "1px solid rgba(255, 255, 255, 0.08)",
+                        "&:hover": { bgcolor: "rgba(255, 255, 255, 0.1)" },
                       }}
                     />
                   </TableCell>

@@ -58,7 +58,7 @@ function PortfolioChart({ period }: { period: Period }) {
         <path d={areaPath} fill="url(#chartGrad)" />
         <path d={linePath} fill="none" stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         {points.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="3" fill="#6366f1" stroke="#060918" strokeWidth="2" />
+          <circle key={i} cx={p.x} cy={p.y} r="3" fill="#6366f1" stroke="#000000" strokeWidth="2" />
         ))}
       </svg>
     </Box>
@@ -68,7 +68,22 @@ function PortfolioChart({ period }: { period: Period }) {
 function StatCard({ title, value, change, icon, color }: { title: string; value: string; change?: string; icon: React.ReactNode; color: string }) {
   const isPositive = change && !change.startsWith("-");
   return (
-    <Card elevation={0} sx={{ height: "100%" }}>
+    <Card
+      elevation={0}
+      sx={{
+        height: "100%",
+        background: "rgba(255, 255, 255, 0.03)",
+        backdropFilter: "blur(20px)",
+        border: "1px solid rgba(255, 255, 255, 0.06)",
+        borderRadius: "16px",
+        transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+        "&:hover": {
+          background: "rgba(255, 255, 255, 0.05)",
+          borderColor: "rgba(255, 255, 255, 0.1)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+        },
+      }}
+    >
       <CardContent sx={{ p: 2.5 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
           <Box sx={{ width: 40, height: 40, borderRadius: "10px", bgcolor: `${color}15`, display: "flex", alignItems: "center", justifyContent: "center", color }}>
@@ -80,18 +95,18 @@ function StatCard({ title, value, change, icon, color }: { title: string; value:
               label={change}
               size="small"
               sx={{
-                bgcolor: isPositive ? "rgba(16, 185, 129, 0.08)" : "rgba(239, 68, 68, 0.08)",
-                color: isPositive ? "#10b981" : "#ef4444",
+                bgcolor: isPositive ? "rgba(34, 197, 94, 0.08)" : "rgba(239, 68, 68, 0.08)",
+                color: isPositive ? "#22c55e" : "#ef4444",
                 fontWeight: 600,
                 fontSize: "0.7rem",
                 height: 24,
-                "& .MuiChip-icon": { color: isPositive ? "#10b981 !important" : "#ef4444 !important" },
+                "& .MuiChip-icon": { color: isPositive ? "#22c55e !important" : "#ef4444 !important" },
               }}
             />
           )}
         </Box>
-        <Typography variant="body2" sx={{ color: "#64748b", mb: 0.5, fontSize: "0.8rem" }}>{title}</Typography>
-        <Typography variant="h5" sx={{ color: "#f1f5f9", fontWeight: 700, letterSpacing: "-0.01em" }}>{value}</Typography>
+        <Typography variant="body2" sx={{ color: "#999999", mb: 0.5, fontSize: "0.8rem" }}>{title}</Typography>
+        <Typography variant="h5" sx={{ color: "#ffffff", fontWeight: 700, letterSpacing: "-0.01em" }}>{value}</Typography>
       </CardContent>
     </Card>
   );
@@ -141,10 +156,19 @@ export default function OverviewPage() {
       <Grid container spacing={2}>
         {/* Portfolio Chart */}
         <Grid size={{ xs: 12, md: 8 }}>
-          <Card elevation={0} sx={{ height: "100%" }}>
+          <Card
+            elevation={0}
+            sx={{
+              height: "100%",
+              background: "rgba(255, 255, 255, 0.03)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255, 255, 255, 0.06)",
+              borderRadius: "16px",
+            }}
+          >
             <CardContent sx={{ p: 2.5 }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                <Typography variant="subtitle1" sx={{ color: "#f1f5f9", fontWeight: 700 }}>Portfolio Performance</Typography>
+                <Typography variant="subtitle1" sx={{ color: "#ffffff", fontWeight: 700 }}>Portfolio Performance</Typography>
                 <Box sx={{ display: "flex", gap: 0.5 }}>
                   {(["1W", "1M", "3M", "1Y", "ALL"] as Period[]).map((p) => (
                     <Chip
@@ -153,15 +177,15 @@ export default function OverviewPage() {
                       size="small"
                       onClick={() => setActivePeriod(p)}
                       sx={{
-                        bgcolor: activePeriod === p ? "rgba(99, 102, 241, 0.12)" : "transparent",
-                        color: activePeriod === p ? "#818cf8" : "#475569",
+                        bgcolor: activePeriod === p ? "rgba(255, 255, 255, 0.08)" : "transparent",
+                        color: activePeriod === p ? "#ffffff" : "#666666",
                         fontWeight: 600,
                         fontSize: "0.7rem",
                         height: 24,
-                        border: activePeriod === p ? "1px solid rgba(99, 102, 241, 0.2)" : "1px solid rgba(255,255,255,0.06)",
+                        border: activePeriod === p ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(255,255,255,0.06)",
                         cursor: "pointer",
                         transition: "all 0.2s",
-                        "&:hover": { bgcolor: "rgba(99, 102, 241, 0.08)" },
+                        "&:hover": { bgcolor: "rgba(255, 255, 255, 0.06)" },
                       }}
                     />
                   ))}
@@ -170,7 +194,7 @@ export default function OverviewPage() {
               <PortfolioChart period={activePeriod} />
               <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
                 {portfolioHistory[activePeriod].map((d, i) => (
-                  <Typography key={`${d.date}-${i}`} variant="caption" sx={{ color: "#475569", fontSize: "0.65rem" }}>{d.date}</Typography>
+                  <Typography key={`${d.date}-${i}`} variant="caption" sx={{ color: "#666666", fontSize: "0.65rem" }}>{d.date}</Typography>
                 ))}
               </Box>
             </CardContent>
@@ -179,9 +203,18 @@ export default function OverviewPage() {
 
         {/* Asset Allocation */}
         <Grid size={{ xs: 12, md: 4 }}>
-          <Card elevation={0} sx={{ height: "100%" }}>
+          <Card
+            elevation={0}
+            sx={{
+              height: "100%",
+              background: "rgba(255, 255, 255, 0.03)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255, 255, 255, 0.06)",
+              borderRadius: "16px",
+            }}
+          >
             <CardContent sx={{ p: 2.5 }}>
-              <Typography variant="subtitle1" sx={{ color: "#f1f5f9", fontWeight: 700, mb: 2 }}>Asset Allocation</Typography>
+              <Typography variant="subtitle1" sx={{ color: "#ffffff", fontWeight: 700, mb: 2 }}>Asset Allocation</Typography>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
                 {mergedCoins.map((coin) => {
                   const value = coin.holdings * coin.price;
@@ -195,9 +228,9 @@ export default function OverviewPage() {
                           ) : (
                             <Avatar sx={{ width: 22, height: 22, background: coin.gradient, fontSize: "0.55rem", fontWeight: 700 }}>{coin.symbol[0]}</Avatar>
                           )}
-                          <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 500, fontSize: "0.8rem" }}>{coin.symbol}</Typography>
+                          <Typography variant="body2" sx={{ color: "#ffffff", fontWeight: 500, fontSize: "0.8rem" }}>{coin.symbol}</Typography>
                         </Box>
-                        <Typography variant="body2" sx={{ color: "#94a3b8", fontSize: "0.8rem" }}>{pct.toFixed(1)}%</Typography>
+                        <Typography variant="body2" sx={{ color: "#cccccc", fontSize: "0.8rem" }}>{pct.toFixed(1)}%</Typography>
                       </Box>
                       <Box sx={{ height: 4, borderRadius: 2, bgcolor: "rgba(255,255,255,0.04)", overflow: "hidden" }}>
                         <Box sx={{ height: "100%", width: `${pct}%`, bgcolor: coin.color, borderRadius: 2, transition: "width 0.5s ease" }} />
@@ -214,14 +247,22 @@ export default function OverviewPage() {
       <Grid container spacing={2} sx={{ mt: 0 }}>
         {/* Holdings */}
         <Grid size={{ xs: 12, md: 8 }}>
-          <Card elevation={0}>
+          <Card
+            elevation={0}
+            sx={{
+              background: "rgba(255, 255, 255, 0.03)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255, 255, 255, 0.06)",
+              borderRadius: "16px",
+            }}
+          >
             <CardContent sx={{ p: 2.5 }}>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                <Typography variant="subtitle1" sx={{ color: "#f1f5f9", fontWeight: 700 }}>Your Holdings</Typography>
+                <Typography variant="subtitle1" sx={{ color: "#ffffff", fontWeight: 700 }}>Your Holdings</Typography>
                 <Typography
                   variant="body2"
                   onClick={() => navigate("/dashboard/wallets")}
-                  sx={{ color: "#818cf8", fontWeight: 500, cursor: "pointer", "&:hover": { textDecoration: "underline" }, fontSize: "0.8rem" }}
+                  sx={{ color: "#ffffff", fontWeight: 500, cursor: "pointer", "&:hover": { textDecoration: "underline" }, fontSize: "0.8rem" }}
                 >
                   View All
                 </Typography>
@@ -230,7 +271,7 @@ export default function OverviewPage() {
                 <TableHead>
                   <TableRow>
                     {["Asset", "Price", "Holdings", "Value", "P&L", "24h"].map((h) => (
-                      <TableCell key={h} sx={{ color: "#475569", fontWeight: 600, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", borderBottom: "1px solid rgba(255,255,255,0.04)", py: 1.5 }}>
+                      <TableCell key={h} sx={{ color: "#666666", fontWeight: 600, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", borderBottom: "1px solid rgba(255,255,255,0.05)", py: 1.5 }}>
                         {h}
                       </TableCell>
                     ))}
@@ -242,7 +283,7 @@ export default function OverviewPage() {
                     const cost = coin.holdings * coin.avgBuy;
                     const pnl = value - cost;
                     return (
-                      <TableRow key={coin.symbol} sx={{ cursor: "pointer", "&:hover": { bgcolor: "rgba(255,255,255,0.02)" }, "& td": { borderBottom: "1px solid rgba(255,255,255,0.03)", py: 1.5 } }}>
+                      <TableRow key={coin.symbol} sx={{ cursor: "pointer", "&:hover": { bgcolor: "rgba(255,255,255,0.03)" }, "& td": { borderBottom: "1px solid rgba(255,255,255,0.03)", py: 1.5 } }}>
                         <TableCell>
                           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                             {coin.image ? (
@@ -251,23 +292,23 @@ export default function OverviewPage() {
                               <Avatar sx={{ width: 30, height: 30, background: coin.gradient, fontSize: "0.7rem", fontWeight: 700 }}>{coin.symbol[0]}</Avatar>
                             )}
                             <Box>
-                              <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.85rem" }}>{coin.symbol}</Typography>
-                              <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.7rem" }}>{coin.name}</Typography>
+                              <Typography variant="body2" sx={{ color: "#ffffff", fontWeight: 600, fontSize: "0.85rem" }}>{coin.symbol}</Typography>
+                              <Typography variant="caption" sx={{ color: "#666666", fontSize: "0.7rem" }}>{coin.name}</Typography>
                             </Box>
                           </Box>
                         </TableCell>
-                        <TableCell sx={{ color: "#f1f5f9", fontWeight: 500, fontSize: "0.85rem" }}>{formatPrice(coin.price)}</TableCell>
-                        <TableCell sx={{ color: "#94a3b8", fontSize: "0.85rem" }}>{coin.holdings.toLocaleString()} {coin.symbol}</TableCell>
-                        <TableCell sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.85rem" }}>${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+                        <TableCell sx={{ color: "#ffffff", fontWeight: 500, fontSize: "0.85rem" }}>{formatPrice(coin.price)}</TableCell>
+                        <TableCell sx={{ color: "#cccccc", fontSize: "0.85rem" }}>{coin.holdings.toLocaleString()} {coin.symbol}</TableCell>
+                        <TableCell sx={{ color: "#ffffff", fontWeight: 600, fontSize: "0.85rem" }}>${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
                         <TableCell>
-                          <Typography sx={{ color: pnl >= 0 ? "#10b981" : "#ef4444", fontWeight: 600, fontSize: "0.85rem" }}>
+                          <Typography sx={{ color: pnl >= 0 ? "#22c55e" : "#ef4444", fontWeight: 600, fontSize: "0.85rem" }}>
                             {pnl >= 0 ? "+" : ""}${pnl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </Typography>
                         </TableCell>
                         <TableCell>
                           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                            {coin.change >= 0 ? <TrendingUpIcon sx={{ fontSize: 14, color: "#10b981" }} /> : <TrendingDownIcon sx={{ fontSize: 14, color: "#ef4444" }} />}
-                            <Typography sx={{ color: coin.change >= 0 ? "#10b981" : "#ef4444", fontWeight: 600, fontSize: "0.8rem" }}>{coin.change >= 0 ? "+" : ""}{typeof coin.change === "number" ? coin.change.toFixed(2) : coin.change}%</Typography>
+                            {coin.change >= 0 ? <TrendingUpIcon sx={{ fontSize: 14, color: "#22c55e" }} /> : <TrendingDownIcon sx={{ fontSize: 14, color: "#ef4444" }} />}
+                            <Typography sx={{ color: coin.change >= 0 ? "#22c55e" : "#ef4444", fontWeight: 600, fontSize: "0.8rem" }}>{coin.change >= 0 ? "+" : ""}{typeof coin.change === "number" ? coin.change.toFixed(2) : coin.change}%</Typography>
                           </Box>
                         </TableCell>
                       </TableRow>
@@ -281,22 +322,31 @@ export default function OverviewPage() {
 
         {/* Recent Activity */}
         <Grid size={{ xs: 12, md: 4 }}>
-          <Card elevation={0} sx={{ height: "100%" }}>
+          <Card
+            elevation={0}
+            sx={{
+              height: "100%",
+              background: "rgba(255, 255, 255, 0.03)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255, 255, 255, 0.06)",
+              borderRadius: "16px",
+            }}
+          >
             <CardContent sx={{ p: 2.5 }}>
-              <Typography variant="subtitle1" sx={{ color: "#f1f5f9", fontWeight: 700, mb: 2 }}>Recent Activity</Typography>
+              <Typography variant="subtitle1" sx={{ color: "#ffffff", fontWeight: 700, mb: 2 }}>Recent Activity</Typography>
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
                 {recentActivity.map((activity, i) => (
                   <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1.5, p: 1.5, borderRadius: "8px", bgcolor: "rgba(255,255,255,0.02)", "&:hover": { bgcolor: "rgba(255,255,255,0.04)" } }}>
-                    <Box sx={{ width: 32, height: 32, borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", bgcolor: activity.type === "trade" ? "rgba(99, 102, 241, 0.1)" : activity.type === "deposit" ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)" }}>
-                      {activity.type === "trade" ? <SwapHorizIcon sx={{ fontSize: 16, color: "#818cf8" }} /> : activity.type === "deposit" ? <ArrowDownwardIcon sx={{ fontSize: 16, color: "#10b981" }} /> : <ArrowUpwardIcon sx={{ fontSize: 16, color: "#ef4444" }} />}
+                    <Box sx={{ width: 32, height: 32, borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", bgcolor: activity.type === "trade" ? "rgba(255, 255, 255, 0.06)" : activity.type === "deposit" ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)" }}>
+                      {activity.type === "trade" ? <SwapHorizIcon sx={{ fontSize: 16, color: "#ffffff" }} /> : activity.type === "deposit" ? <ArrowDownwardIcon sx={{ fontSize: 16, color: "#22c55e" }} /> : <ArrowUpwardIcon sx={{ fontSize: 16, color: "#ef4444" }} />}
                     </Box>
                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                      <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 500, fontSize: "0.8rem" }}>{activity.action}</Typography>
-                      <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.7rem" }}>{activity.time}</Typography>
+                      <Typography variant="body2" sx={{ color: "#ffffff", fontWeight: 500, fontSize: "0.8rem" }}>{activity.action}</Typography>
+                      <Typography variant="caption" sx={{ color: "#666666", fontSize: "0.7rem" }}>{activity.time}</Typography>
                     </Box>
                     <Box sx={{ textAlign: "right" }}>
-                      <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 500, fontSize: "0.8rem" }}>{activity.amount}</Typography>
-                      <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.7rem" }}>{activity.value}</Typography>
+                      <Typography variant="body2" sx={{ color: "#ffffff", fontWeight: 500, fontSize: "0.8rem" }}>{activity.amount}</Typography>
+                      <Typography variant="caption" sx={{ color: "#666666", fontSize: "0.7rem" }}>{activity.value}</Typography>
                     </Box>
                   </Box>
                 ))}

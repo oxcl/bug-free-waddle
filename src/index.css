@@ -212,6 +212,119 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
+/* ===== Dashboard Glass Panels ===== */
+.dash-sidebar {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(24px);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dash-topbar {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dash-glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dash-glass-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.dash-glass-card-static {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+}
+
+.dash-nav-item {
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.dash-nav-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dash-nav-active {
+  background: rgba(255, 255, 255, 0.06);
+  border-left: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.dash-chip-active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dash-chip-inactive {
+  background: transparent;
+  color: #666666;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dash-table-header {
+  color: #666666;
+  font-weight: 600;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dash-table-row {
+  transition: background 0.2s ease;
+}
+
+.dash-table-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.dash-input-field .MuiOutlinedInput-root {
+  color: #ffffff;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+}
+
+.dash-input-field .MuiOutlinedInput-root fieldset {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dash-input-field .MuiOutlinedInput-root:hover fieldset {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dash-input-field .MuiOutlinedInput-root.Mui-focused fieldset {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.dash-input-field .MuiInputLabel-root {
+  color: #666666;
+  font-size: 0.8rem;
+}
+
+.dash-input-field .MuiInputLabel-root.Mui-focused {
+  color: #999999;
+}
+
+.dash-tab-active {
+  color: #ffffff !important;
+}
+
+.dash-tab-indicator {
+  background: #ffffff;
+}
+
 /* ===== Gradient Effects ===== */
 .gradient-text {
   background: linear-gradient(135deg, #fff 0%, #ccc 50%, #fff 100%);

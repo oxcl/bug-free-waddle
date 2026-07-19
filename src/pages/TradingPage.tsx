@@ -24,14 +24,23 @@ function OrderBookPanel() {
   const maxTotal = Math.max(...orderBook.asks.map((o) => o.amount), ...orderBook.bids.map((o) => o.amount));
 
   return (
-    <Card elevation={0} sx={{ height: "100%" }}>
+    <Card
+      elevation={0}
+      sx={{
+        height: "100%",
+        background: "rgba(255, 255, 255, 0.03)",
+        backdropFilter: "blur(20px)",
+        border: "1px solid rgba(255, 255, 255, 0.06)",
+        borderRadius: "16px",
+      }}
+    >
       <CardContent sx={{ p: 2 }}>
-        <Typography variant="subtitle2" sx={{ color: "#f1f5f9", fontWeight: 700, mb: 1.5, fontSize: "0.85rem" }}>Order Book</Typography>
+        <Typography variant="subtitle2" sx={{ color: "#ffffff", fontWeight: 700, mb: 1.5, fontSize: "0.85rem" }}>Order Book</Typography>
 
         {/* Header */}
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1, px: 0.5 }}>
-          <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.65rem", textTransform: "uppercase" }}>Price (USDT)</Typography>
-          <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.65rem", textTransform: "uppercase" }}>Amount (BTC)</Typography>
+          <Typography variant="caption" sx={{ color: "#666666", fontSize: "0.65rem", textTransform: "uppercase" }}>Price (USDT)</Typography>
+          <Typography variant="caption" sx={{ color: "#666666", fontSize: "0.65rem", textTransform: "uppercase" }}>Amount (BTC)</Typography>
         </Box>
 
         {/* Asks (reversed so lowest ask is at bottom) */}
@@ -40,24 +49,24 @@ function OrderBookPanel() {
             <Box key={`ask-${i}`} sx={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", py: 0.5, px: 0.5, borderRadius: "4px" }}>
               <Box sx={{ position: "absolute", right: 0, top: 0, bottom: 0, width: `${(ask.amount / maxTotal) * 100}%`, bgcolor: "rgba(239, 68, 68, 0.06)", borderRadius: "4px" }} />
               <Typography variant="body2" sx={{ color: "#ef4444", fontWeight: 500, fontSize: "0.78rem", zIndex: 1 }}>{ask.price.toLocaleString()}</Typography>
-              <Typography variant="body2" sx={{ color: "#94a3b8", fontSize: "0.78rem", zIndex: 1 }}>{ask.amount.toFixed(3)}</Typography>
+              <Typography variant="body2" sx={{ color: "#cccccc", fontSize: "0.78rem", zIndex: 1 }}>{ask.amount.toFixed(3)}</Typography>
             </Box>
           ))}
         </Box>
 
         {/* Spread */}
-        <Box sx={{ display: "flex", justifyContent: "center", py: 1, bgcolor: "rgba(255,255,255,0.02)", borderRadius: "6px", mb: 1 }}>
-          <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 700, fontSize: "0.9rem" }}>$67,432.18</Typography>
-          <Chip label="Spread 0.01%" size="small" sx={{ ml: 1, bgcolor: "rgba(99, 102, 241, 0.08)", color: "#818cf8", fontSize: "0.6rem", height: 20, fontWeight: 600 }} />
+        <Box sx={{ display: "flex", justifyContent: "center", py: 1, bgcolor: "rgba(255,255,255,0.03)", borderRadius: "6px", mb: 1 }}>
+          <Typography variant="body2" sx={{ color: "#ffffff", fontWeight: 700, fontSize: "0.9rem" }}>$67,432.18</Typography>
+          <Chip label="Spread 0.01%" size="small" sx={{ ml: 1, bgcolor: "rgba(255, 255, 255, 0.06)", color: "#ffffff", fontSize: "0.6rem", height: 20, fontWeight: 600 }} />
         </Box>
 
         {/* Bids */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
           {orderBook.bids.map((bid, i) => (
             <Box key={`bid-${i}`} sx={{ position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", py: 0.5, px: 0.5, borderRadius: "4px" }}>
-              <Box sx={{ position: "absolute", right: 0, top: 0, bottom: 0, width: `${(bid.amount / maxTotal) * 100}%`, bgcolor: "rgba(16, 185, 129, 0.06)", borderRadius: "4px" }} />
-              <Typography variant="body2" sx={{ color: "#10b981", fontWeight: 500, fontSize: "0.78rem", zIndex: 1 }}>{bid.price.toLocaleString()}</Typography>
-              <Typography variant="body2" sx={{ color: "#94a3b8", fontSize: "0.78rem", zIndex: 1 }}>{bid.amount.toFixed(3)}</Typography>
+              <Box sx={{ position: "absolute", right: 0, top: 0, bottom: 0, width: `${(bid.amount / maxTotal) * 100}%`, bgcolor: "rgba(34, 197, 94, 0.06)", borderRadius: "4px" }} />
+              <Typography variant="body2" sx={{ color: "#22c55e", fontWeight: 500, fontSize: "0.78rem", zIndex: 1 }}>{bid.price.toLocaleString()}</Typography>
+              <Typography variant="body2" sx={{ color: "#cccccc", fontSize: "0.78rem", zIndex: 1 }}>{bid.amount.toFixed(3)}</Typography>
             </Box>
           ))}
         </Box>
@@ -75,18 +84,28 @@ function TradeForm() {
 
   const inputSx = {
     "& .MuiOutlinedInput-root": {
-      color: "#f1f5f9",
+      color: "#ffffff",
       fontSize: "0.85rem",
+      background: "rgba(255, 255, 255, 0.03)",
       "& fieldset": { borderColor: "rgba(255,255,255,0.08)" },
-      "&:hover fieldset": { borderColor: "rgba(99, 102, 241, 0.3)" },
-      "&.Mui-focused fieldset": { borderColor: "#6366f1" },
+      "&:hover fieldset": { borderColor: "rgba(255, 255, 255, 0.15)" },
+      "&.Mui-focused fieldset": { borderColor: "rgba(255, 255, 255, 0.3)" },
     },
-    "& .MuiInputLabel-root": { color: "#64748b", fontSize: "0.8rem" },
-    "& .MuiInputLabel-root.Mui-focused": { color: "#818cf8" },
+    "& .MuiInputLabel-root": { color: "#666666", fontSize: "0.8rem" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#999999" },
   };
 
   return (
-    <Card elevation={0} sx={{ height: "100%" }}>
+    <Card
+      elevation={0}
+      sx={{
+        height: "100%",
+        background: "rgba(255, 255, 255, 0.03)",
+        backdropFilter: "blur(20px)",
+        border: "1px solid rgba(255, 255, 255, 0.06)",
+        borderRadius: "16px",
+      }}
+    >
       <CardContent sx={{ p: 2.5 }}>
         <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
           <Button
@@ -94,12 +113,12 @@ function TradeForm() {
             variant={side === "buy" ? "contained" : "text"}
             onClick={() => setSide("buy")}
             sx={{
-              bgcolor: side === "buy" ? "rgba(16, 185, 129, 0.15)" : "transparent",
-              color: side === "buy" ? "#10b981" : "#64748b",
-              border: side === "buy" ? "1px solid rgba(16, 185, 129, 0.3)" : "1px solid rgba(255,255,255,0.06)",
+              bgcolor: side === "buy" ? "rgba(34, 197, 94, 0.15)" : "transparent",
+              color: side === "buy" ? "#22c55e" : "#666666",
+              border: side === "buy" ? "1px solid rgba(34, 197, 94, 0.3)" : "1px solid rgba(255,255,255,0.06)",
               fontWeight: 600,
               py: 1,
-              "&:hover": { bgcolor: "rgba(16, 185, 129, 0.1)", borderColor: "rgba(16, 185, 129, 0.3)" },
+              "&:hover": { bgcolor: "rgba(34, 197, 94, 0.1)", borderColor: "rgba(34, 197, 94, 0.3)" },
             }}
           >
             Buy
@@ -110,7 +129,7 @@ function TradeForm() {
             onClick={() => setSide("sell")}
             sx={{
               bgcolor: side === "sell" ? "rgba(239, 68, 68, 0.15)" : "transparent",
-              color: side === "sell" ? "#ef4444" : "#64748b",
+              color: side === "sell" ? "#ef4444" : "#666666",
               border: side === "sell" ? "1px solid rgba(239, 68, 68, 0.3)" : "1px solid rgba(255,255,255,0.06)",
               fontWeight: 600,
               py: 1,
@@ -121,7 +140,7 @@ function TradeForm() {
           </Button>
         </Box>
 
-        <ToggleButtonGroup value={orderType} exclusive fullWidth size="small" onChange={(_, v) => v && setOrderType(v)} sx={{ mb: 2, "& .MuiToggleButton-root": { color: "#64748b", borderColor: "rgba(255,255,255,0.06)", textTransform: "none", fontWeight: 600, fontSize: "0.75rem", py: 0.8, "&.Mui-selected": { bgcolor: "rgba(99, 102, 241, 0.12)", color: "#818cf8" } } }}>
+        <ToggleButtonGroup value={orderType} exclusive fullWidth size="small" onChange={(_, v) => v && setOrderType(v)} sx={{ mb: 2, "& .MuiToggleButton-root": { color: "#666666", borderColor: "rgba(255,255,255,0.06)", textTransform: "none", fontWeight: 600, fontSize: "0.75rem", py: 0.8, "&.Mui-selected": { bgcolor: "rgba(255, 255, 255, 0.06)", color: "#ffffff" } } }}>
           <ToggleButton value="limit">Limit</ToggleButton>
           <ToggleButton value="market">Market</ToggleButton>
           <ToggleButton value="stop">Stop-Limit</ToggleButton>
@@ -136,7 +155,7 @@ function TradeForm() {
           {/* Quick Amount Buttons */}
           <Box sx={{ display: "flex", gap: 0.5 }}>
             {["25%", "50%", "75%", "100%"].map((pct) => (
-              <Button key={pct} variant="text" size="small" sx={{ flex: 1, color: "#475569", fontSize: "0.7rem", minWidth: 0, py: 0.5, "&:hover": { color: "#818cf8", bgcolor: "rgba(99, 102, 241, 0.06)" } }}>
+              <Button key={pct} variant="text" size="small" sx={{ flex: 1, color: "#666666", fontSize: "0.7rem", minWidth: 0, py: 0.5, "&:hover": { color: "#ffffff", bgcolor: "rgba(255, 255, 255, 0.04)" } }}>
                 {pct}
               </Button>
             ))}
@@ -146,12 +165,12 @@ function TradeForm() {
 
           {/* Summary */}
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.8rem" }}>Total</Typography>
-            <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.85rem" }}>${Number(total).toLocaleString()}</Typography>
+            <Typography variant="body2" sx={{ color: "#999999", fontSize: "0.8rem" }}>Total</Typography>
+            <Typography variant="body2" sx={{ color: "#ffffff", fontWeight: 600, fontSize: "0.85rem" }}>${Number(total).toLocaleString()}</Typography>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="body2" sx={{ color: "#64748b", fontSize: "0.8rem" }}>Available</Typography>
-            <Typography variant="body2" sx={{ color: "#f1f5f9", fontSize: "0.85rem" }}>{side === "buy" ? "$42,850.00" : "1.245 BTC"}</Typography>
+            <Typography variant="body2" sx={{ color: "#999999", fontSize: "0.8rem" }}>Available</Typography>
+            <Typography variant="body2" sx={{ color: "#ffffff", fontSize: "0.85rem" }}>{side === "buy" ? "$42,850.00" : "1.245 BTC"}</Typography>
           </Box>
 
           <Button
@@ -161,8 +180,8 @@ function TradeForm() {
               mt: 1,
               py: 1.3,
               fontWeight: 700,
-              bgcolor: side === "buy" ? "rgba(16, 185, 129, 0.9)" : "rgba(239, 68, 68, 0.9)",
-              "&:hover": { bgcolor: side === "buy" ? "rgba(16, 185, 129, 1)" : "rgba(239, 68, 68, 1)" },
+              bgcolor: side === "buy" ? "rgba(34, 197, 94, 0.9)" : "rgba(239, 68, 68, 0.9)",
+              "&:hover": { bgcolor: side === "buy" ? "#22c55e" : "#ef4444" },
             }}
           >
             {side === "buy" ? "Buy BTC" : "Sell BTC"}
@@ -180,7 +199,15 @@ function PriceChartArea() {
   const coin = cgCoins.find((c) => c.symbol.toUpperCase() === selectedSymbol) || cgCoins[0];
 
   return (
-    <Card elevation={0}>
+    <Card
+      elevation={0}
+      sx={{
+        background: "rgba(255, 255, 255, 0.03)",
+        backdropFilter: "blur(20px)",
+        border: "1px solid rgba(255, 255, 255, 0.06)",
+        borderRadius: "16px",
+      }}
+    >
       <CardContent sx={{ p: 2.5 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, flexWrap: "wrap", gap: 1 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -188,32 +215,32 @@ function PriceChartArea() {
               <Select
                 value={selectedPair}
                 onChange={(e) => setSelectedPair(e.target.value)}
-                sx={{ color: "#f1f5f9", fontSize: "0.85rem", fontWeight: 600, "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.08)" }, "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(99, 102, 241, 0.3)" } }}
+                sx={{ color: "#ffffff", fontSize: "0.85rem", fontWeight: 600, background: "rgba(255, 255, 255, 0.03)", "& .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255,255,255,0.08)" }, "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "rgba(255, 255, 255, 0.15)" } }}
               >
                 {cgCoins.filter((c) => !["usdt","usdc"].includes(c.symbol.toLowerCase())).slice(0, 10).map((c) => (
                   <MenuItem key={c.id} value={`${c.symbol.toUpperCase()}/USDT`}>{c.symbol.toUpperCase()}/USDT</MenuItem>
                 ))}
               </Select>
             </FormControl>
-            {loading ? <CircularProgress size={20} /> : <Typography variant="h5" sx={{ color: "#f1f5f9", fontWeight: 700 }}>{coin ? formatPrice(coin.current_price) : "--"}</Typography>}
+            {loading ? <CircularProgress size={20} /> : <Typography variant="h5" sx={{ color: "#ffffff", fontWeight: 700 }}>{coin ? formatPrice(coin.current_price) : "--"}</Typography>}
             {coin && (
               <Chip
                 icon={(coin.price_change_percentage_24h ?? 0) >= 0 ? <TrendingUpIcon sx={{ fontSize: "12px !important" }} /> : <TrendingDownIcon sx={{ fontSize: "12px !important" }} />}
                 label={`${(coin.price_change_percentage_24h ?? 0) >= 0 ? "+" : ""}${(coin.price_change_percentage_24h ?? 0).toFixed(2)}%`}
                 size="small"
                 sx={{
-                  bgcolor: (coin.price_change_percentage_24h ?? 0) >= 0 ? "rgba(16, 185, 129, 0.08)" : "rgba(239, 68, 68, 0.08)",
-                  color: (coin.price_change_percentage_24h ?? 0) >= 0 ? "#10b981" : "#ef4444",
+                  bgcolor: (coin.price_change_percentage_24h ?? 0) >= 0 ? "rgba(34, 197, 94, 0.08)" : "rgba(239, 68, 68, 0.08)",
+                  color: (coin.price_change_percentage_24h ?? 0) >= 0 ? "#22c55e" : "#ef4444",
                   fontWeight: 600,
                   fontSize: "0.7rem",
-                  "& .MuiChip-icon": { color: (coin.price_change_percentage_24h ?? 0) >= 0 ? "#10b981 !important" : "#ef4444 !important" },
+                  "& .MuiChip-icon": { color: (coin.price_change_percentage_24h ?? 0) >= 0 ? "#22c55e !important" : "#ef4444 !important" },
                 }}
               />
             )}
           </Box>
           <Box sx={{ display: "flex", gap: 0.5 }}>
             {["1H", "4H", "1D", "1W", "1M"].map((t) => (
-              <Chip key={t} label={t} size="small" sx={{ bgcolor: t === "1D" ? "rgba(99, 102, 241, 0.12)" : "transparent", color: t === "1D" ? "#818cf8" : "#475569", fontWeight: 600, fontSize: "0.65rem", height: 22, border: t === "1D" ? "1px solid rgba(99, 102, 241, 0.2)" : "1px solid rgba(255,255,255,0.06)", cursor: "pointer" }} />
+              <Chip key={t} label={t} size="small" sx={{ bgcolor: t === "1D" ? "rgba(255, 255, 255, 0.06)" : "transparent", color: t === "1D" ? "#ffffff" : "#666666", fontWeight: 600, fontSize: "0.65rem", height: 22, border: t === "1D" ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(255,255,255,0.06)", cursor: "pointer" }} />
             ))}
           </Box>
         </Box>
@@ -242,8 +269,8 @@ function PriceChartArea() {
               const close = isUp ? base : base + 15;
               return (
                 <g key={i}>
-                  <line x1={x} y1={high} x2={x} y2={low} stroke={isUp ? "#10b981" : "#ef4444"} strokeWidth="1" />
-                  <rect x={x - 5} y={open} width="10" height={Math.abs(close - open) || 2} fill={isUp ? "#10b981" : "#ef4444"} rx="1" />
+                  <line x1={x} y1={high} x2={x} y2={low} stroke={isUp ? "#22c55e" : "#ef4444"} strokeWidth="1" />
+                  <rect x={x - 5} y={open} width="10" height={Math.abs(close - open) || 2} fill={isUp ? "#22c55e" : "#ef4444"} rx="1" />
                 </g>
               );
             })}
@@ -262,8 +289,8 @@ function PriceChartArea() {
             { label: "Market Cap", value: `$${formatCompact(coin.market_cap)}` },
           ].map((stat) => (
             <Grid size={{ xs: 6, sm: 3 }} key={stat.label}>
-              <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.65rem", textTransform: "uppercase" }}>{stat.label}</Typography>
-              <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.85rem" }}>{stat.value}</Typography>
+              <Typography variant="caption" sx={{ color: "#666666", fontSize: "0.65rem", textTransform: "uppercase" }}>{stat.label}</Typography>
+              <Typography variant="body2" sx={{ color: "#ffffff", fontWeight: 600, fontSize: "0.85rem" }}>{stat.value}</Typography>
             </Grid>
           ))}
         </Grid>

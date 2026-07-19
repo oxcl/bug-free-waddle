@@ -21,24 +21,32 @@ export default function OrdersPage() {
 
   return (
     <Box>
-      <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)} sx={{ mb: 2, "& .MuiTab-root": { color: "#64748b", textTransform: "none", fontWeight: 600, fontSize: "0.85rem", minHeight: 36 }, "& .Mui-selected": { color: "#818cf8" }, "& .MuiTabs-indicator": { bgcolor: "#6366f1" } }}>
+      <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)} sx={{ mb: 2, "& .MuiTab-root": { color: "#666666", textTransform: "none", fontWeight: 600, fontSize: "0.85rem", minHeight: 36 }, "& .Mui-selected": { color: "#ffffff" }, "& .MuiTabs-indicator": { bgcolor: "#ffffff" } }}>
         <Tab label={`Open Orders (${openOrders.filter((o) => o.status === "Open" || o.status === "Partial").length})`} />
         <Tab label="Order History" />
       </Tabs>
 
       {tabValue === 0 && (
-        <Card elevation={0}>
+        <Card
+          elevation={0}
+          sx={{
+            background: "rgba(255, 255, 255, 0.03)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(255, 255, 255, 0.06)",
+            borderRadius: "16px",
+          }}
+        >
           <CardContent sx={{ p: 0 }}>
             {openOrders.filter((o) => o.status === "Open" || o.status === "Partial").length === 0 ? (
               <Box sx={{ p: 6, textAlign: "center" }}>
-                <Typography variant="body1" sx={{ color: "#475569" }}>No open orders</Typography>
+                <Typography variant="body1" sx={{ color: "#666666" }}>No open orders</Typography>
               </Box>
             ) : (
               <Table>
                 <TableHead>
                   <TableRow>
                     {["Date", "Pair", "Type", "Side", "Price", "Amount", "Filled", "Total", "Status", "Actions"].map((h) => (
-                      <TableCell key={h} sx={{ color: "#475569", fontWeight: 600, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", borderBottom: "1px solid rgba(255,255,255,0.04)", py: 1.5, px: 1.5 }}>
+                      <TableCell key={h} sx={{ color: "#666666", fontWeight: 600, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", borderBottom: "1px solid rgba(255,255,255,0.05)", py: 1.5, px: 1.5 }}>
                         {h}
                       </TableCell>
                     ))}
@@ -46,43 +54,43 @@ export default function OrdersPage() {
                 </TableHead>
                 <TableBody>
                   {openOrders.filter((o) => o.status === "Open" || o.status === "Partial").map((order) => (
-                    <TableRow key={order.id} sx={{ "&:hover": { bgcolor: "rgba(255,255,255,0.02)" }, "& td": { borderBottom: "1px solid rgba(255,255,255,0.03)", py: 1.5, px: 1.5, fontSize: "0.82rem" } }}>
-                      <TableCell sx={{ color: "#94a3b8", whiteSpace: "nowrap" }}>{order.date}</TableCell>
-                      <TableCell sx={{ color: "#f1f5f9", fontWeight: 600 }}>{order.pair}</TableCell>
+                    <TableRow key={order.id} sx={{ "&:hover": { bgcolor: "rgba(255,255,255,0.03)" }, "& td": { borderBottom: "1px solid rgba(255,255,255,0.03)", py: 1.5, px: 1.5, fontSize: "0.82rem" } }}>
+                      <TableCell sx={{ color: "#cccccc", whiteSpace: "nowrap" }}>{order.date}</TableCell>
+                      <TableCell sx={{ color: "#ffffff", fontWeight: 600 }}>{order.pair}</TableCell>
                       <TableCell>
-                        <Chip label={order.type} size="small" sx={{ bgcolor: "rgba(99, 102, 241, 0.08)", color: "#818cf8", fontSize: "0.65rem", height: 20, fontWeight: 600 }} />
+                        <Chip label={order.type} size="small" sx={{ bgcolor: "rgba(255, 255, 255, 0.06)", color: "#ffffff", fontSize: "0.65rem", height: 20, fontWeight: 600 }} />
                       </TableCell>
                       <TableCell>
                         <Chip
                           label={order.side}
                           size="small"
                           sx={{
-                            bgcolor: order.side === "Buy" ? "rgba(16, 185, 129, 0.08)" : "rgba(239, 68, 68, 0.08)",
-                            color: order.side === "Buy" ? "#10b981" : "#ef4444",
+                            bgcolor: order.side === "Buy" ? "rgba(34, 197, 94, 0.08)" : "rgba(239, 68, 68, 0.08)",
+                            color: order.side === "Buy" ? "#22c55e" : "#ef4444",
                             fontSize: "0.65rem",
                             height: 20,
                             fontWeight: 600,
                           }}
                         />
                       </TableCell>
-                      <TableCell sx={{ color: "#f1f5f9", fontWeight: 500 }}>${order.price.toLocaleString()}</TableCell>
-                      <TableCell sx={{ color: "#94a3b8" }}>{order.amount.toLocaleString()}</TableCell>
+                      <TableCell sx={{ color: "#ffffff", fontWeight: 500 }}>${order.price.toLocaleString()}</TableCell>
+                      <TableCell sx={{ color: "#cccccc" }}>{order.amount.toLocaleString()}</TableCell>
                       <TableCell>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                           <Box sx={{ flex: 1, height: 4, borderRadius: 2, bgcolor: "rgba(255,255,255,0.04)", overflow: "hidden", minWidth: 60 }}>
-                            <Box sx={{ height: "100%", width: `${(order.filled / order.amount) * 100}%`, bgcolor: "#6366f1", borderRadius: 2 }} />
+                            <Box sx={{ height: "100%", width: `${(order.filled / order.amount) * 100}%`, bgcolor: "#ffffff", borderRadius: 2 }} />
                           </Box>
-                          <Typography variant="caption" sx={{ color: "#64748b", fontSize: "0.7rem" }}>{((order.filled / order.amount) * 100).toFixed(0)}%</Typography>
+                          <Typography variant="caption" sx={{ color: "#999999", fontSize: "0.7rem" }}>{((order.filled / order.amount) * 100).toFixed(0)}%</Typography>
                         </Box>
                       </TableCell>
-                      <TableCell sx={{ color: "#f1f5f9", fontWeight: 500 }}>${order.total.toLocaleString()}</TableCell>
+                      <TableCell sx={{ color: "#ffffff", fontWeight: 500 }}>${order.total.toLocaleString()}</TableCell>
                       <TableCell>
                         <Chip
                           label={order.status}
                           size="small"
                           sx={{
-                            bgcolor: order.status === "Open" ? "rgba(99, 102, 241, 0.08)" : "rgba(245, 158, 11, 0.08)",
-                            color: order.status === "Open" ? "#818cf8" : "#f59e0b",
+                            bgcolor: order.status === "Open" ? "rgba(255, 255, 255, 0.06)" : "rgba(245, 158, 11, 0.08)",
+                            color: order.status === "Open" ? "#ffffff" : "#f59e0b",
                             fontSize: "0.65rem",
                             height: 20,
                             fontWeight: 600,
@@ -106,13 +114,21 @@ export default function OrdersPage() {
       )}
 
       {tabValue === 1 && (
-        <Card elevation={0}>
+        <Card
+          elevation={0}
+          sx={{
+            background: "rgba(255, 255, 255, 0.03)",
+            backdropFilter: "blur(20px)",
+            border: "1px solid rgba(255, 255, 255, 0.06)",
+            borderRadius: "16px",
+          }}
+        >
           <CardContent sx={{ p: 0 }}>
             <Table>
               <TableHead>
                 <TableRow>
                   {["Date", "Pair", "Type", "Side", "Price", "Amount", "Total", "Fee", "Status"].map((h) => (
-                    <TableCell key={h} sx={{ color: "#475569", fontWeight: 600, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", borderBottom: "1px solid rgba(255,255,255,0.04)", py: 1.5, px: 1.5 }}>
+                    <TableCell key={h} sx={{ color: "#666666", fontWeight: 600, fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.06em", borderBottom: "1px solid rgba(255,255,255,0.05)", py: 1.5, px: 1.5 }}>
                       {h}
                     </TableCell>
                   ))}
@@ -120,36 +136,36 @@ export default function OrdersPage() {
               </TableHead>
               <TableBody>
                 {orderHistory.map((order) => (
-                  <TableRow key={order.id} sx={{ "&:hover": { bgcolor: "rgba(255,255,255,0.02)" }, "& td": { borderBottom: "1px solid rgba(255,255,255,0.03)", py: 1.5, px: 1.5, fontSize: "0.82rem" } }}>
-                    <TableCell sx={{ color: "#94a3b8", whiteSpace: "nowrap" }}>{order.date}</TableCell>
-                    <TableCell sx={{ color: "#f1f5f9", fontWeight: 600 }}>{order.pair}</TableCell>
+                  <TableRow key={order.id} sx={{ "&:hover": { bgcolor: "rgba(255,255,255,0.03)" }, "& td": { borderBottom: "1px solid rgba(255,255,255,0.03)", py: 1.5, px: 1.5, fontSize: "0.82rem" } }}>
+                    <TableCell sx={{ color: "#cccccc", whiteSpace: "nowrap" }}>{order.date}</TableCell>
+                    <TableCell sx={{ color: "#ffffff", fontWeight: 600 }}>{order.pair}</TableCell>
                     <TableCell>
-                      <Chip label={order.type} size="small" sx={{ bgcolor: "rgba(99, 102, 241, 0.08)", color: "#818cf8", fontSize: "0.65rem", height: 20, fontWeight: 600 }} />
+                      <Chip label={order.type} size="small" sx={{ bgcolor: "rgba(255, 255, 255, 0.06)", color: "#ffffff", fontSize: "0.65rem", height: 20, fontWeight: 600 }} />
                     </TableCell>
                     <TableCell>
                       <Chip
                         label={order.side}
                         size="small"
                         sx={{
-                          bgcolor: order.side === "Buy" ? "rgba(16, 185, 129, 0.08)" : "rgba(239, 68, 68, 0.08)",
-                          color: order.side === "Buy" ? "#10b981" : "#ef4444",
+                          bgcolor: order.side === "Buy" ? "rgba(34, 197, 94, 0.08)" : "rgba(239, 68, 68, 0.08)",
+                          color: order.side === "Buy" ? "#22c55e" : "#ef4444",
                           fontSize: "0.65rem",
                           height: 20,
                           fontWeight: 600,
                         }}
                       />
                     </TableCell>
-                    <TableCell sx={{ color: "#f1f5f9", fontWeight: 500 }}>${order.price.toLocaleString()}</TableCell>
-                    <TableCell sx={{ color: "#94a3b8" }}>{order.amount.toLocaleString()}</TableCell>
-                    <TableCell sx={{ color: "#f1f5f9", fontWeight: 500 }}>${order.total.toLocaleString()}</TableCell>
-                    <TableCell sx={{ color: "#94a3b8" }}>${order.fee.toFixed(2)}</TableCell>
+                    <TableCell sx={{ color: "#ffffff", fontWeight: 500 }}>${order.price.toLocaleString()}</TableCell>
+                    <TableCell sx={{ color: "#cccccc" }}>{order.amount.toLocaleString()}</TableCell>
+                    <TableCell sx={{ color: "#ffffff", fontWeight: 500 }}>${order.total.toLocaleString()}</TableCell>
+                    <TableCell sx={{ color: "#cccccc" }}>${order.fee.toFixed(2)}</TableCell>
                     <TableCell>
                       <Chip
                         label={order.status}
                         size="small"
                         sx={{
-                          bgcolor: order.status === "Filled" ? "rgba(16, 185, 129, 0.08)" : "rgba(100, 116, 139, 0.15)",
-                          color: order.status === "Filled" ? "#10b981" : "#64748b",
+                          bgcolor: order.status === "Filled" ? "rgba(34, 197, 94, 0.08)" : "rgba(255, 255, 255, 0.06)",
+                          color: order.status === "Filled" ? "#22c55e" : "#999999",
                           fontSize: "0.65rem",
                           height: 20,
                           fontWeight: 600,

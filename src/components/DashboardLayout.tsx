@@ -33,7 +33,7 @@ const MLogo = ({ size = 32 }: { size?: number }) => (
     <rect width="40" height="40" rx="10" fill="white" />
     <path
       d="M10 30V12L16 22L20 14L24 22L30 12V30"
-      stroke="#060918"
+      stroke="#000000"
       strokeWidth="2.8"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -69,7 +69,8 @@ function NotificationDropdown({ anchorEl, onClose }: { anchorEl: HTMLElement | n
             mt: 1,
             width: 380,
             maxHeight: 480,
-            bgcolor: "#0f1225",
+            bgcolor: "rgba(17, 17, 17, 0.9)",
+            backdropFilter: "blur(20px)",
             border: "1px solid rgba(255,255,255,0.08)",
             borderRadius: "12px",
             boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
@@ -80,12 +81,12 @@ function NotificationDropdown({ anchorEl, onClose }: { anchorEl: HTMLElement | n
     >
       <Box sx={{ px: 2.5, py: 2, borderBottom: "1px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Box>
-          <Typography variant="subtitle1" sx={{ color: "#f1f5f9", fontWeight: 700, fontSize: "0.95rem" }}>Notifications</Typography>
+          <Typography variant="subtitle1" sx={{ color: "#ffffff", fontWeight: 700, fontSize: "0.95rem" }}>Notifications</Typography>
           {unreadCount > 0 && (
             <Typography variant="caption" sx={{ color: "#f59e0b", fontWeight: 500, fontSize: "0.7rem" }}>{unreadCount} unread</Typography>
           )}
         </Box>
-        <Chip label="Mark all read" size="small" sx={{ height: 24, fontSize: "0.65rem", fontWeight: 600, bgcolor: "rgba(99, 102, 241, 0.1)", color: "#818cf8", border: "1px solid rgba(99, 102, 241, 0.2)", cursor: "pointer", "&:hover": { bgcolor: "rgba(99, 102, 241, 0.15)" } }} />
+        <Chip label="Mark all read" size="small" sx={{ height: 24, fontSize: "0.65rem", fontWeight: 600, bgcolor: "rgba(255, 255, 255, 0.06)", color: "#ffffff", border: "1px solid rgba(255, 255, 255, 0.1)", cursor: "pointer", "&:hover": { bgcolor: "rgba(255, 255, 255, 0.1)" } }} />
       </Box>
       <Box sx={{ overflowY: "auto", maxHeight: 380 }}>
         {notifications.map((n) => (
@@ -105,24 +106,24 @@ function NotificationDropdown({ anchorEl, onClose }: { anchorEl: HTMLElement | n
           >
             <Box sx={{ mt: 0.25, flexShrink: 0 }}>
               {n.type === "warning" && <WarningAmberIcon sx={{ fontSize: 18, color: "#f59e0b" }} />}
-              {n.type === "success" && <CheckCircleIcon sx={{ fontSize: 18, color: "#10b981" }} />}
+              {n.type === "success" && <CheckCircleIcon sx={{ fontSize: 18, color: "#22c55e" }} />}
               {n.type === "info" && <InfoOutlinedIcon sx={{ fontSize: 18, color: "#3b82f6" }} />}
             </Box>
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.25 }}>
-                <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.8rem", lineHeight: 1.3 }}>{n.title}</Typography>
+                <Typography variant="body2" sx={{ color: "#ffffff", fontWeight: 600, fontSize: "0.8rem", lineHeight: 1.3 }}>{n.title}</Typography>
                 {!n.read && (
                   <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "#f59e0b", flexShrink: 0 }} />
                 )}
               </Box>
-              <Typography variant="caption" sx={{ color: "#64748b", fontSize: "0.72rem", lineHeight: 1.4, display: "block" }}>{n.message}</Typography>
-              <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.65rem", mt: 0.5, display: "block" }}>{n.time}</Typography>
+              <Typography variant="caption" sx={{ color: "#999999", fontSize: "0.72rem", lineHeight: 1.4, display: "block" }}>{n.message}</Typography>
+              <Typography variant="caption" sx={{ color: "#666666", fontSize: "0.65rem", mt: 0.5, display: "block" }}>{n.time}</Typography>
             </Box>
           </Box>
         ))}
       </Box>
       <Box sx={{ px: 2.5, py: 1.5, borderTop: "1px solid rgba(255,255,255,0.06)", textAlign: "center", cursor: "pointer", "&:hover": { bgcolor: "rgba(255,255,255,0.02)" } }}>
-        <Typography variant="body2" sx={{ color: "#818cf8", fontWeight: 600, fontSize: "0.8rem", display: "inline-flex", alignItems: "center", gap: 0.5 }}>
+        <Typography variant="body2" sx={{ color: "#ffffff", fontWeight: 600, fontSize: "0.8rem", display: "inline-flex", alignItems: "center", gap: 0.5 }}>
           View all notifications <ArrowForwardIcon sx={{ fontSize: 14 }} />
         </Typography>
       </Box>
@@ -153,7 +154,8 @@ export default function DashboardLayout() {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        bgcolor: "#080b16",
+        background: "rgba(255, 255, 255, 0.02)",
+        backdropFilter: "blur(24px)",
         borderRight: "1px solid rgba(255,255,255,0.06)",
         transition: "width 0.3s ease",
         overflow: "hidden",
@@ -174,10 +176,10 @@ export default function DashboardLayout() {
         <MLogo size={32} />
         {!collapsed && (
           <Box sx={{ minWidth: 0 }}>
-            <Typography variant="body1" sx={{ fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.02em", lineHeight: 1.1, whiteSpace: "nowrap" }}>
+            <Typography variant="body1" sx={{ fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1.1, whiteSpace: "nowrap" }}>
               MATBEA
             </Typography>
-            <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.55rem", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+            <Typography variant="caption" sx={{ color: "#666666", fontSize: "0.55rem", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
               Enterprise
             </Typography>
           </Box>
@@ -195,6 +197,7 @@ export default function DashboardLayout() {
                 navigate(item.path);
                 if (isMobile) setMobileOpen(false);
               }}
+              className={`dash-nav-item ${active ? "dash-nav-active" : ""}`}
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -203,16 +206,12 @@ export default function DashboardLayout() {
                 py: 1.2,
                 mx: 0.5,
                 mb: 0.5,
-                borderRadius: "10px",
                 cursor: "pointer",
-                transition: "all 0.2s ease",
                 justifyContent: collapsed ? "center" : "flex-start",
-                bgcolor: active ? "rgba(99, 102, 241, 0.12)" : "transparent",
-                color: active ? "#818cf8" : "#64748b",
-                borderLeft: active ? "3px solid #6366f1" : "3px solid transparent",
+                color: active ? "#ffffff" : "#666666",
                 "&:hover": {
-                  bgcolor: active ? "rgba(99, 102, 241, 0.12)" : "rgba(255,255,255,0.04)",
-                  color: "#f1f5f9",
+                  bgcolor: active ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.04)",
+                  color: "#ffffff",
                 },
               }}
             >
@@ -243,14 +242,14 @@ export default function DashboardLayout() {
             }}
             onClick={() => { document.cookie = "matbea_auth=; path=/; max-age=0"; navigate("/login"); }}
           >
-            <Avatar sx={{ width: 32, height: 32, bgcolor: "rgba(99, 102, 241, 0.2)", color: "#818cf8", fontSize: "0.75rem", fontWeight: 700 }}>
+            <Avatar sx={{ width: 32, height: 32, bgcolor: "rgba(255, 255, 255, 0.1)", color: "#ffffff", fontSize: "0.75rem", fontWeight: 700 }}>
               HH
             </Avatar>
             <Box sx={{ minWidth: 0, flex: 1 }}>
-              <Typography variant="body2" sx={{ color: "#f1f5f9", fontWeight: 600, fontSize: "0.8rem", whiteSpace: "nowrap" }}>Hamed Hazarkhani</Typography>
-              <Typography variant="caption" sx={{ color: "#475569", fontSize: "0.7rem", whiteSpace: "nowrap" }}>Regular User</Typography>
+              <Typography variant="body2" sx={{ color: "#ffffff", fontWeight: 600, fontSize: "0.8rem", whiteSpace: "nowrap" }}>Hamed Hazarkhani</Typography>
+              <Typography variant="caption" sx={{ color: "#666666", fontSize: "0.7rem", whiteSpace: "nowrap" }}>Regular User</Typography>
             </Box>
-            <LogoutIcon sx={{ fontSize: 16, color: "#475569" }} />
+            <LogoutIcon sx={{ fontSize: 16, color: "#666666" }} />
           </Box>
         )}
         {collapsed && (
@@ -258,7 +257,7 @@ export default function DashboardLayout() {
             sx={{ display: "flex", justifyContent: "center" }}
             onClick={() => { document.cookie = "matbea_auth=; path=/; max-age=0"; navigate("/login"); }}
           >
-            <Avatar sx={{ width: 32, height: 32, bgcolor: "rgba(99, 102, 241, 0.2)", color: "#818cf8", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer" }}>
+            <Avatar sx={{ width: 32, height: 32, bgcolor: "rgba(255, 255, 255, 0.1)", color: "#ffffff", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer" }}>
               HH
             </Avatar>
           </Box>
@@ -268,7 +267,7 @@ export default function DashboardLayout() {
   );
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#060918" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#000000" }}>
       {/* Desktop Sidebar */}
       {!isMobile && (
         <Box component="nav" sx={{ flexShrink: 0, width: currentWidth, transition: "width 0.3s ease" }}>
@@ -281,10 +280,10 @@ export default function DashboardLayout() {
         anchor="left"
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
-        slotProps={{ paper: { sx: { bgcolor: "#080b16", borderRight: "1px solid rgba(255,255,255,0.06)" } } }}
+        slotProps={{ paper: { sx: { bgcolor: "rgba(0, 0, 0, 0.9)", backdropFilter: "blur(24px)", borderRight: "1px solid rgba(255,255,255,0.06)" } } }}
       >
         <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
-          <IconButton onClick={() => setMobileOpen(false)} sx={{ color: "#64748b" }}>
+          <IconButton onClick={() => setMobileOpen(false)} sx={{ color: "#666666" }}>
             <CloseIcon />
           </IconButton>
         </Box>
@@ -302,28 +301,28 @@ export default function DashboardLayout() {
             justifyContent: "space-between",
             px: { xs: 2, md: 3 },
             borderBottom: "1px solid rgba(255,255,255,0.06)",
-            bgcolor: "rgba(6, 9, 24, 0.8)",
-            backdropFilter: "blur(12px)",
+            background: "rgba(0, 0, 0, 0.6)",
+            backdropFilter: "blur(16px)",
             flexShrink: 0,
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             {isMobile && (
-              <IconButton onClick={() => setMobileOpen(true)} sx={{ color: "#f1f5f9" }}>
+              <IconButton onClick={() => setMobileOpen(true)} sx={{ color: "#ffffff" }}>
                 <MenuIcon />
               </IconButton>
             )}
             {!isMobile && (
               <IconButton
                 onClick={() => setCollapsed(!collapsed)}
-                sx={{ color: "#64748b", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "8px", width: 36, height: 36, "&:hover": { color: "#f1f5f9", borderColor: "rgba(255,255,255,0.12)" } }}
+                sx={{ color: "#666666", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "8px", width: 36, height: 36, "&:hover": { color: "#ffffff", borderColor: "rgba(255,255,255,0.15)" } }}
               >
                 <MenuIcon sx={{ fontSize: 18 }} />
               </IconButton>
             )}
             <Box sx={{ display: { xs: "none", sm: "flex" }, alignItems: "center", gap: 1 }}>
-              <Typography variant="body2" sx={{ color: "#475569" }}>/</Typography>
-              <Typography variant="body2" sx={{ color: "#94a3b8", fontWeight: 500 }}>
+              <Typography variant="body2" sx={{ color: "#666666" }}>/</Typography>
+              <Typography variant="body2" sx={{ color: "#999999", fontWeight: 500 }}>
                 {sidebarItems.find((i) => isActive(i.path))?.label || "Dashboard"}
               </Typography>
             </Box>
@@ -335,18 +334,18 @@ export default function DashboardLayout() {
                 display: { xs: "none", md: "flex" },
                 alignItems: "center",
                 gap: 1,
-                bgcolor: "rgba(16, 185, 129, 0.08)",
-                border: "1px solid rgba(16, 185, 129, 0.15)",
+                bgcolor: "rgba(34, 197, 94, 0.08)",
+                border: "1px solid rgba(34, 197, 94, 0.15)",
                 borderRadius: "8px",
                 px: 1.5,
                 py: 0.5,
               }}
             >
-              <TrendingUpIcon sx={{ fontSize: 14, color: "#10b981" }} />
-              <Typography variant="body2" sx={{ color: "#10b981", fontWeight: 600, fontSize: "0.8rem" }}>+2.45%</Typography>
+              <TrendingUpIcon sx={{ fontSize: 14, color: "#22c55e" }} />
+              <Typography variant="body2" sx={{ color: "#22c55e", fontWeight: 600, fontSize: "0.8rem" }}>+2.45%</Typography>
             </Box>
             <IconButton
-              sx={{ color: "#64748b", "&:hover": { color: "#f1f5f9" } }}
+              sx={{ color: "#666666", "&:hover": { color: "#ffffff" } }}
               onClick={(e) => setNotifAnchor(e.currentTarget)}
             >
               <Badge badgeContent={unreadCount} color="warning" sx={{ "& .MuiBadge-badge": { fontSize: "0.6rem", height: 16, minWidth: 16 } }}>
@@ -354,7 +353,7 @@ export default function DashboardLayout() {
               </Badge>
             </IconButton>
             <NotificationDropdown anchorEl={notifAnchor} onClose={() => setNotifAnchor(null)} />
-            <IconButton sx={{ color: "#64748b", "&:hover": { color: "#f1f5f9" } }}>
+            <IconButton sx={{ color: "#666666", "&:hover": { color: "#ffffff" } }}>
               <SettingsIcon sx={{ fontSize: 20 }} />
             </IconButton>
           </Box>
