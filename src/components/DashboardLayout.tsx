@@ -153,6 +153,7 @@ export default function DashboardLayout() {
               cursor: "pointer",
               "&:hover": { bgcolor: "rgba(255,255,255,0.04)" },
             }}
+            onClick={() => { document.cookie = "matbea_auth=; path=/; max-age=0"; navigate("/login"); }}
           >
             <Avatar sx={{ width: 32, height: 32, bgcolor: "rgba(99, 102, 241, 0.2)", color: "#818cf8", fontSize: "0.8rem", fontWeight: 700 }}>
               JD
@@ -165,7 +166,10 @@ export default function DashboardLayout() {
           </Box>
         )}
         {collapsed && (
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Box
+            sx={{ display: "flex", justifyContent: "center" }}
+            onClick={() => { document.cookie = "matbea_auth=; path=/; max-age=0"; navigate("/login"); }}
+          >
             <Avatar sx={{ width: 32, height: 32, bgcolor: "rgba(99, 102, 241, 0.2)", color: "#818cf8", fontSize: "0.8rem", fontWeight: 700, cursor: "pointer" }}>
               JD
             </Avatar>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -83,6 +83,7 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const isMobile = useMediaQuery("(max-width:900px)");
   const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -202,7 +203,7 @@ export default function Navbar() {
             <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
               {!isMobile && (
                 <>
-                  <Button variant="text" sx={{ color: "#999", fontWeight: 500 }}>Log In</Button>
+                  <Button variant="text" sx={{ color: "#999", fontWeight: 500 }} onClick={() => navigate("/login")}>Log In</Button>
                   <Button variant="contained">Contact Sales</Button>
                 </>
               )}
@@ -254,7 +255,7 @@ export default function Navbar() {
         </List>
         <Divider sx={{ borderColor: "rgba(255,255,255,0.08)", mx: 2 }} />
         <Box sx={{ p: 2, display: "flex", flexDirection: "column", gap: 1.5 }}>
-          <Button variant="outlined" fullWidth>Log In</Button>
+          <Button variant="outlined" fullWidth onClick={() => { setMobileOpen(false); navigate("/login"); }}>Log In</Button>
           <Button variant="contained" fullWidth>Contact Sales</Button>
         </Box>
       </Drawer>

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import Autocomplete from "@mui/material/Autocomplete";
+import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
 import InputAdornment from "@mui/material/InputAdornment";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -14,6 +15,10 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import type { SelectChangeEvent } from "@mui/material/Select";
 
 const companies = [
   "ООО ТехноСталь", "ООО Восток-Ресурс", "ЗАО Сибирский метиз",
@@ -54,6 +59,14 @@ const companies = [
   "ООО СамарСтрой", "ООО ТульСтрой", "ООО ЧелябСтрой",
 ];
 
+const MOCK_COMPANY = "ЗАО Сибирский метиз";
+const MOCK_EMAIL = "hamed.h1375@gmail.com";
+const MOCK_PASSWORD = "Hh13751375!@";
+
+function setAuthCookie() {
+  document.cookie = "matbea_auth=1; path=/; max-age=86400";
+}
+
 const MLogo = ({ size = 40 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
     <rect width="40" height="40" rx="10" fill="white" />
@@ -69,13 +82,20 @@ const MLogo = ({ size = 40 }: { size?: number }) => (
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const [company, setCompany] = useState<string | null>(null);
+  const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    if (company !== MOCK_COMPANY || email !== MOCK_EMAIL || password !== MOCK_PASSWORD) {
+      setError("Invalid credentials. Please check your company, email, and password.");
+      return;
+    }
+    setAuthCookie();
     navigate("/dashboard");
   };
 
@@ -115,36 +135,56 @@ export default function LoginPage() {
         </Box>
 
         <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
-          <Autocomplete
-            options={companies}
-            value={company}
-            onChange={(_, val) => setCompany(val)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Company"
-                placeholder="Select your company"
-                slotProps={{
-                  input: {
-                    ...params.slotProps?.input,
-                    startAdornment: (
-                      <>
-                        <InputAdornment position="start">
-                          <BusinessIcon sx={{ color: "#475569", fontSize: 20 }} />
-                        </InputAdornment>
-                        {params.slotProps?.input?.startAdornment}
-                      </>
-                    ),
-                  },
-                }}
-              />
-            )}
-            sx={{
-              "& .MuiOutlinedInput-root": {
+          {error && (
+            <Alert severity="error" sx={{ bgcolor: "rgba(239,68,68,0.1)", color: "#fca5a5", border: "1px solid rgba(239,68,68,0.2)" }}>
+              {error}
+            </Alert>
+          )}
+          <FormControl fullWidth>
+            <InputLabel id="company-label" sx={{ color: "#64748b" }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                <BusinessIcon sx={{ fontSize: 20 }} />
+                Company
+              </Box>
+            </InputLabel>
+            <Select
+              labelId="company-label"
+              value={company}
+              label="Company"
+              onChange={(e: SelectChangeEvent) => setCompany(e.target.value)}
+              sx={{
                 bgcolor: "rgba(255,255,255,0.02)",
-              },
-            }}
-          />
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(255,255,255,0.15)",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(255,255,255,0.25)",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#6366f1",
+                },
+              }}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    bgcolor: "#111",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    maxHeight: 300,
+                    "& .MuiMenuItem-root": {
+                      color: "#e2e8f0",
+                      fontSize: "0.9rem",
+                      "&:hover": { bgcolor: "rgba(99, 102, 241, 0.1)" },
+                      "&.Mui-selected": { bgcolor: "rgba(99, 102, 241, 0.15)" },
+                    },
+                  },
+                },
+              }}
+            >
+              {companies.map((c) => (
+                <MenuItem key={c} value={c}>{c}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           <TextField
             fullWidth
@@ -216,7 +256,7 @@ export default function LoginPage() {
 
           <Divider sx={{ borderColor: "rgba(255,255,255,0.06)", my: 0.5 }} />
 
-          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Typography variant="body2" sx={{ color: "#475569" }}>
               No account?{" "}
               <Box
@@ -225,9 +265,6 @@ export default function LoginPage() {
               >
                 Request Access
               </Box>
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#475569", cursor: "pointer", "&:hover": { color: "#818cf8" } }}>
-              Forgot password?
             </Typography>
           </Box>
         </Box>
